@@ -3,6 +3,8 @@ let config = {
   width: 800,
   height: 600,
   pixelArt: true,
+  title: 'Defend Border',
+  version: 'V0.3',
   physics: {
     default: 'arcade',
   },
@@ -14,12 +16,12 @@ let config = {
 }
 
 let game = new Phaser.Game(config)
-let player, cursors, shoots, speed, shootFire, lastFired = 0, keyDownW
+let player, cursors, shoots, speed, shootFire, lastFired = 0, keyboard
 
 function preload() {
   this.load.image('sky', 'src/images/scene.png')
-  this.load.image('shoot', 'src/images/shoot.png')
-  this.load.spritesheet('player', 'src/images/plane.png', {
+  this.load.image('shoot', 'src/images/sprites/shoot.png')
+  this.load.spritesheet('plane', 'src/images/sprites/plane.png', {
     frameWidth: 74,
     frameHeight: 20
   })
@@ -27,26 +29,26 @@ function preload() {
 }
 
 function create() {
+  //background Scene
   this.add.image(400, 300, 'sky')
+  //Animation Fly Plane
   this.anims.create({
     key: 'fly',
-    frames: this.anims.generateFrameNumbers('player', { frames: [0, 1] }),
+    frames: this.anims.generateFrameNumbers('plane', { frames: [0, 1] }),
     frameRate: 8,
     repeat: -1,
   })
-  this.anims.create({
-    key:'fire',
-    frames: this.anims.generateFrameNumbers('player', { frames: [2, 4] }),
-    frameRate: 8,
-  })
 
-  keyDownW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W)
+  //variables attributes
+  cursors = this.input.keyboard.createCursorKeys()
+  keyboard = {keyS:this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S), keyW:this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W)}
   speed = Phaser.Math.GetSpeed(1, 300)
   shootFire = this.sound.add('shootAudio')
   player = this.physics.add.sprite(40, 300, 'player')
   player.setCollideWorldBounds(true)
   player.play('fly')
 
+  //shoot Class
   const Shoot = new Phaser.Class({
     Extends: Phaser.GameObjects.Image,
 
@@ -69,20 +71,18 @@ function create() {
       }
     }
   })
-
   shoots = this.add.group({
     classType: Shoot,
-    maxSize: 10,
+    maxSize: 12,
     runChildUpdate: true
   })
 
-  cursors = this.input.keyboard.createCursorKeys()
 }
 
 function update(time, delta) {
-  if (cursors.down.isDown) {
+  if (cursors.down.isDown || keyboard.keyS.isDown) {
     player.setVelocityY(+150)
-  } else if (cursors.up.isDown || keyDownW.isDown) {
+  } else if (cursors.up.isDown || keyboard.keyW.isDown) {
     player.setVelocityY(-150)
   } else if (cursors.space.isDown && time > lastFired) {
     let bullet = shoots.get()
