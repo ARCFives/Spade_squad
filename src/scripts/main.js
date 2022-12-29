@@ -16,11 +16,13 @@ let config = {
 }
 
 let game = new Phaser.Game(config)
-let player, cursors, shoots, speed, shootFire, lastFired = 0, keyboard, engineAudio
+let player, cursors, shoots, speed, shootFire, lastFired = 0, keyboard, engineAudio, ammunitionCount = 50, ammunitionText, ammo, ammoCheck, ammoGet
 
 function preload() {
   this.load.image('sky', 'src/images/background/map1.png')
   this.load.image('shoot', 'src/images/sprites/shoot.png')
+  this.load.image('ammo', 'src/images/sprites/ammunition-box.png')
+  this.load.image('ammoIcon', 'src/images/sprites/ammoIcon.png')
   this.load.spritesheet('plane', 'src/images/sprites/plane.png', {
     frameWidth: 74,
     frameHeight: 20
@@ -42,7 +44,7 @@ function create() {
   this.anims.create({
     key:'fire',
     frames: this.anims.generateFrameNumbers('plane', { frames: [2, 4] }),
-    frameRate: 100
+    frameRate: 60
   })
 
   //variables attributes
@@ -53,6 +55,8 @@ function create() {
   keyboard = {keyS:this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S), keyW:this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W)}
   speed = Phaser.Math.GetSpeed(1, 300)
   shootFire = this.sound.add('shootAudio')
+  this.add.image(16,16, 'ammoIcon')
+  ammunitionText = this.add.text(24, 10, `${ammunitionCount}`, {fontFamily: 'nasa', fontSize: '14px', fill: '#000' })
   player = this.physics.add.sprite(40, 300, 'player')
   player.setCollideWorldBounds(true)
   player.play('fly')
@@ -86,9 +90,60 @@ function create() {
     runChildUpdate: true
   })
 
+  //Ammo Class
+  const AmmoBox = new Phaser.Class({
+    Extends: Phaser.GameObjects.Image,
+
+    initialize: function AmmoBox(scene) {
+      Phaser.GameObjects.Image.call(this, scene, 0, 0, 'ammo')
+      this.speed = Phaser.Math.GetSpeed(150, 1)
+    },
+
+    create: function () {
+      let y = Math.random() * (400 - 1) + 1
+      this.setPosition(780, y)
+      this.setActive(true)
+      this.setVisible(true)
+    },
+
+    update: function (time, delta) {
+      this.x -= this.speed * delta
+      if (this.x < 20) {
+        ammoGet = false
+        this.setActive(false)
+        this.setVisible(false)
+      }
+    }
+  })
+  ammo = this.physics.add.group({
+    classType: AmmoBox,
+    maxSize: 1,
+    runChildUpdate: true
+  })
+
+  //interval create ammobox
+  setInterval(() => {
+    let ammunition = ammo.get()
+    if(ammunition) {
+      ammunition.create()
+      ammoGet = true
+    }
+  }, 8000)
+
+  ammoCheck = function checkAmmoCollider(player, ammo) {
+      if(ammoGet){
+        ammunitionCount += 25
+        ammunitionText.setText(`${ammunitionCount}`)
+        ammo.setActive(false).setVisible(false)
+        ammoGet = false
+      }
+  }
+
 }
 
 function update(time, delta) {
+  //check collision player and ammo
+  this.physics.add.overlap(ammo, player, ammoCheck, null, this)
   //background move
   this.background.tilePositionX += 0.5
   //controls
@@ -99,13 +154,20 @@ function update(time, delta) {
   } else {
     player.setVelocityY(0)
   } 
-  if (cursors.space.isDown && time > lastFired) {
+  if (cursors.space.isDown && time > lastFired && ammunitionCount > 0) {
     let bullet = shoots.get()
     if (bullet) {
       player.play('fire').once('animationcomplete', () => {
         player.play("fly")})
+      ammunitionCount -= 1
+      ammunitionText.setText(`${ammunitionCount}`)
       bullet.fire(player.x, player.y)
       shootFire.play()
       lastFired = time + 50
     }}
+    if(ammunitionCount < 15) {
+      ammunitionText.setFill('red')
+    }else {
+      ammunitionText.setFill('#000')
+    }
 }
