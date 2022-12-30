@@ -2,6 +2,7 @@ let config = {
   type: Phaser.AUTO,
   width: 800,
   height: 600,
+  backgroundColor: 'black',
   pixelArt: true,
   title: 'Defend Border',
   version: 'V0.3',
@@ -16,13 +17,16 @@ let config = {
 }
 
 let game = new Phaser.Game(config)
-let player, cursors, shoots, speed, shootFire, lastFired = 0, keyboard, engineAudio, ammunitionCount = 50, ammunitionText, ammo, ammoCheck, ammoGet
+let player, cursors, shoots, speed, shootFire, lastFired = 0, keyboard, engineAudio, ammunitionCount = 50, ammunitionText, ammo, ammoCheck, ammoGet, fuelBar, fuelConsu = 100, fueldelay
 
 function preload() {
   this.load.image('sky', 'src/images/background/map1.png')
   this.load.image('shoot', 'src/images/sprites/shoot.png')
   this.load.image('ammo', 'src/images/sprites/ammunition-box.png')
-  this.load.image('ammoIcon', 'src/images/sprites/ammoIcon.png')
+  this.load.image('ammoIcon', 'src/images/HUD/ammoIcon.png')
+  this.load.image('fuelIcon', 'src/images/HUD/fuelCan.png')
+  this.load.image('fuelBack', 'src/images/HUD/fuelBarBackground.png')
+  this.load.image('fuelBar', 'src/images/HUD/fuelBar.png')
   this.load.spritesheet('plane', 'src/images/sprites/plane.png', {
     frameWidth: 74,
     frameHeight: 20
@@ -51,12 +55,23 @@ function create() {
   engineAudio = this.sound.add('engineSound')
   engineAudio.loop = true
   engineAudio.play({volume: 0.4})
+  shootFire = this.sound.add('shootAudio')
   cursors = this.input.keyboard.createCursorKeys()
   keyboard = {keyS:this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S), keyW:this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W)}
   speed = Phaser.Math.GetSpeed(1, 300)
-  shootFire = this.sound.add('shootAudio')
+
+  //fuel icons and system
+  this.add.image(660, 14, 'fuelIcon')
+  let fuelBackground = this.add.image(720, 16, "fuelBack")
+  fuelBar = this.add.image(fuelBackground.x - 50, fuelBackground.y, 'fuelBar').setOrigin( 0, 0.5)
+  fueldelay = setInterval(() => {
+      fuelConsu -= 5
+  }, 5000)
+
+  //ammo icons
   this.add.image(16,16, 'ammoIcon')
   ammunitionText = this.add.text(24, 10, `${ammunitionCount}`, {fontFamily: 'nasa', fontSize: '14px', fill: '#000' })
+  //player sprites
   player = this.physics.add.sprite(40, 300, 'player')
   player.setCollideWorldBounds(true)
   player.play('fly')
@@ -169,5 +184,11 @@ function update(time, delta) {
       ammunitionText.setFill('red')
     }else {
       ammunitionText.setFill('#000')
+    }
+    if(fuelConsu >= 0){
+      if(fuelConsu == 0) {
+        clearInterval(fueldelay)
+      }
+      fuelBar.setDisplaySize(fuelConsu, 5)
     }
 }

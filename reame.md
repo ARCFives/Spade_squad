@@ -1,6 +1,12 @@
 # Ideias Próximo dia
 
-  * consumo de combústivel, spawn de combústivel, adicionar fuel por colisão;
-  * sprite inimigo.
-
+  * sprite explosão;
+  * acertar caixa de munição explode;
+  * som alerta de baixo combústivel;
+  * spawn de combústivel;
+  * adicionar fuel por colisão;
+  * acertar combústivel explode;
+  * sprite inimigo;
+  * animação de voou;
+  
 ### Fixes
