@@ -7,7 +7,7 @@ let config = {
   title: 'Defend Border',
   version: 'V0.3',
   physics: {
-    default: 'arcade',
+    default: 'arcade'
   },
   scene: {
     preload: preload,
@@ -17,7 +17,8 @@ let config = {
 }
 
 let game = new Phaser.Game(config)
-let player, cursors, shoots, speed, shootFire, lastFired = 0, keyboard, engineAudio, ammunitionCount = 50, ammunitionText, ammo, ammoCheck, ammoGet, fuelBar, fuelConsu = 100, fueldelay
+let player, shoots, speed, shootAudio, lastFired = 0, keyboard, engineAudio, ammunitionCount = 50, ammunitionText, ammoBox, 
+ammoCheckCollider, ammoFlag, fuelBar, fuelConsu = 100, fueldelay
 
 function preload() {
   this.load.image('sky', 'src/images/background/map1.png')
@@ -36,46 +37,66 @@ function preload() {
 }
 
 function create() {
-  //background Scene
-  this.background = this.add.tileSprite(400, 300, config.width, config.height, 'sky')
-  //Animation Plane
+  // Background Scene
+  this.background = this.add.tileSprite(
+    400,
+    300,
+    config.width,
+    config.height,
+    'sky'
+  )
+  // Animation Plane
   this.anims.create({
     key: 'fly',
     frames: this.anims.generateFrameNumbers('plane', { frames: [0, 1] }),
     frameRate: 10,
-    repeat: -1,
+    repeat: -1
   })
   this.anims.create({
-    key:'fire',
+    key: 'fire',
     frames: this.anims.generateFrameNumbers('plane', { frames: [2, 4] }),
     frameRate: 60
   })
-
-  //variables attributes
-  engineAudio = this.sound.add('engineSound')
-  engineAudio.loop = true
-  engineAudio.play({volume: 0.4})
-  shootFire = this.sound.add('shootAudio')
-  cursors = this.input.keyboard.createCursorKeys()
-  keyboard = {keyS:this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S), keyW:this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W)}
+  // Sound attributes
+  engineAudio = this.sound.add('engineSound').setLoop(true)
+  engineAudio.play({ volume: 0.5 })
+  shootAudio = this.sound.add('shootAudio')
+  // Key configurations
+  keyboard = {
+    keyS: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
+    keyW: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
+    keySpace: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE),
+    keyUp: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP),
+    keyDown: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN)
+  }
   speed = Phaser.Math.GetSpeed(1, 300)
-
   //fuel icons and system
   this.add.image(660, 14, 'fuelIcon')
-  let fuelBackground = this.add.image(720, 16, "fuelBack")
-  fuelBar = this.add.image(fuelBackground.x - 50, fuelBackground.y, 'fuelBar').setOrigin( 0, 0.5)
+  let fuelBackground = this.add.image(720, 16, 'fuelBack')
+  fuelBar = this.add
+    .image(fuelBackground.x - 50, fuelBackground.y, 'fuelBar')
+    .setOrigin(0, 0.5)
   fueldelay = setInterval(() => {
-      fuelConsu -= 5
+    fuelConsu -= 5
   }, 5000)
-
+  ammoCheckCollider = (player, ammo) => {
+    if (ammoFlag) {
+      ammunitionCount += 25
+      ammunitionText.setText(`${ammunitionCount}`)
+      ammo.setActive(false).setVisible(false)
+      ammoFlag = false
+    }
+  }
   //ammo icons
-  this.add.image(16,16, 'ammoIcon')
-  ammunitionText = this.add.text(24, 10, `${ammunitionCount}`, {fontFamily: 'nasa', fontSize: '14px', fill: '#000' })
+  this.add.image(16, 16, 'ammoIcon')
+  ammunitionText = this.add.text(24, 10, `${ammunitionCount}`, {
+    fontFamily: 'nasa',
+    fontSize: '14px',
+    fill: '#000'
+  })
   //player sprites
   player = this.physics.add.sprite(40, 300, 'player')
-  player.setCollideWorldBounds(true)
-  player.play('fly')
-
+  player.setCollideWorldBounds(true).play('fly')
   //shoot Class
   const Shoot = new Phaser.Class({
     Extends: Phaser.GameObjects.Image,
@@ -124,13 +145,13 @@ function create() {
     update: function (time, delta) {
       this.x -= this.speed * delta
       if (this.x < 20) {
-        ammoGet = false
+        ammoFlag = false
         this.setActive(false)
         this.setVisible(false)
       }
     }
   })
-  ammo = this.physics.add.group({
+  ammoBox = this.physics.add.group({
     classType: AmmoBox,
     maxSize: 1,
     runChildUpdate: true
@@ -138,57 +159,51 @@ function create() {
 
   //interval create ammobox
   setInterval(() => {
-    let ammunition = ammo.get()
-    if(ammunition) {
+    let ammunition = ammoBox.get()
+    if (ammunition) {
       ammunition.create()
-      ammoGet = true
+      ammoFlag = true
     }
   }, 8000)
-
-  ammoCheck = function checkAmmoCollider(player, ammo) {
-      if(ammoGet){
-        ammunitionCount += 25
-        ammunitionText.setText(`${ammunitionCount}`)
-        ammo.setActive(false).setVisible(false)
-        ammoGet = false
-      }
-  }
-
 }
 
 function update(time, delta) {
-  //check collision player and ammo
-  this.physics.add.overlap(ammo, player, ammoCheck, null, this)
-  //background move
+  // Check collision player and ammo
+  this.physics.add.overlap(ammoBox, player, ammoCheckCollider, null, this)
+  // Background move
   this.background.tilePositionX += 0.5
-  //controls
-  if (cursors.down.isDown || keyboard.keyS.isDown) {
+  // Controls move and fire
+  if (keyboard.keyDown.isDown || keyboard.keyS.isDown) {
     player.setVelocityY(+150)
-  } else if (cursors.up.isDown || keyboard.keyW.isDown) {
+  } else if (keyboard.keyUp.isDown || keyboard.keyW.isDown) {
     player.setVelocityY(-150)
   } else {
     player.setVelocityY(0)
-  } 
-  if (cursors.space.isDown && time > lastFired && ammunitionCount > 0) {
+  }
+  if (keyboard.keySpace.isDown && time > lastFired && ammunitionCount > 0) {
     let bullet = shoots.get()
     if (bullet) {
       player.play('fire').once('animationcomplete', () => {
-        player.play("fly")})
+        player.play('fly')
+      })
       ammunitionCount -= 1
       ammunitionText.setText(`${ammunitionCount}`)
       bullet.fire(player.x, player.y)
-      shootFire.play()
+      shootAudio.play()
       lastFired = time + 50
-    }}
-    if(ammunitionCount < 15) {
-      ammunitionText.setFill('red')
-    }else {
-      ammunitionText.setFill('#000')
     }
-    if(fuelConsu >= 0){
-      if(fuelConsu == 0) {
-        clearInterval(fueldelay)
-      }
-      fuelBar.setDisplaySize(fuelConsu, 5)
+  }
+  // Check ammo count
+  if (ammunitionCount < 15) {
+    ammunitionText.setFill('red')
+  } else {
+    ammunitionText.setFill('#000')
+  }
+  // Check fuel level
+  if (fuelConsu >= 0) {
+    if (fuelConsu == 0) {
+      clearInterval(fueldelay)
     }
+    fuelBar.setDisplaySize(fuelConsu, 5)
+  }
 }
