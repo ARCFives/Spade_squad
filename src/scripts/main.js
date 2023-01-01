@@ -18,7 +18,7 @@ let config = {
 
 let game = new Phaser.Game(config)
 let player, shoots, speed, shootAudio, lastFired = 0, keyboard, engineAudio, ammunitionCount = 50, ammunitionText, ammoBox, 
-ammoCheckCollider, ammoFlag, fuelBar, fuelConsu = 100, fueldelay
+ammoCheckCollider, ammoFlag, fuelBar, fuelConsu = 100, fuelInterval, fuelGallon, fuelCheckCollider, fuelFlag, ammoTimer, fuelTimer
 
 function preload() {
   this.load.image('sky', 'src/images/background/map1.png')
@@ -28,6 +28,7 @@ function preload() {
   this.load.image('fuelIcon', 'src/images/HUD/fuelCan.png')
   this.load.image('fuelBack', 'src/images/HUD/fuelBarBackground.png')
   this.load.image('fuelBar', 'src/images/HUD/fuelBar.png')
+  this.load.image('fuelGallon', 'src/images/sprites/fuel-gallon.png')
   this.load.spritesheet('plane', 'src/images/sprites/plane.png', {
     frameWidth: 74,
     frameHeight: 20
@@ -76,7 +77,7 @@ function create() {
   fuelBar = this.add
     .image(fuelBackground.x - 50, fuelBackground.y, 'fuelBar')
     .setOrigin(0, 0.5)
-  fueldelay = setInterval(() => {
+  fuelInterval = setInterval(() => {
     fuelConsu -= 5
   }, 5000)
   ammoCheckCollider = (player, ammo) => {
@@ -156,20 +157,69 @@ function create() {
     maxSize: 1,
     runChildUpdate: true
   })
+  // Fuel Gallon Class
+  const FuelGallon = new Phaser.Class({
+    Extends: Phaser.GameObjects.Image,
+
+    initialize: function FuelGallon(scene) {
+      Phaser.GameObjects.Image.call(this, scene, 0, 0, 'fuelGallon')
+      this.speed = Phaser.Math.GetSpeed(150, 1)
+    },
+
+    create: function () {
+      let y = Math.random() * (400 - 1) + 1
+      this.setPosition(780, y)
+      this.setActive(true)
+      this.setVisible(true)
+    },
+
+    update: function (time, delta) {
+      this.x -= this.speed * delta
+      if (this.x < 20) {
+        fuelFlag = false
+        this.setActive(false)
+        this.setVisible(false)
+      }
+    }
+  })
+  fuelGallon = this.physics.add.group({
+    classType: FuelGallon,
+    maxSize: 1,
+    runChildUpdate: true,
+  })
 
   //interval create ammobox
-  setInterval(() => {
+ ammoTimer = setInterval(() => {
     let ammunition = ammoBox.get()
     if (ammunition) {
       ammunition.create()
       ammoFlag = true
     }
   }, 8000)
+
+ fuelTimer = setInterval(() => {
+    let fuelCan = fuelGallon.get()
+    if(fuelCan) {
+      fuelCan.create()
+      fuelFlag = true
+    }
+  }, 8000)
+
+  fuelCheckCollider = (player, fuelGallon) => {
+    if(fuelFlag){
+      fuelGallon.setActive(false).setVisible(false)
+      fuelFlag = false
+      if(fuelConsu < 90) {
+        fuelConsu += 10
+      }
+    }
+  }
 }
 
 function update(time, delta) {
   // Check collision player and ammo
   this.physics.add.overlap(ammoBox, player, ammoCheckCollider, null, this)
+  this.physics.add.overlap(fuelGallon, player, fuelCheckCollider, null, this)
   // Background move
   this.background.tilePositionX += 0.5
   // Controls move and fire
@@ -202,7 +252,7 @@ function update(time, delta) {
   // Check fuel level
   if (fuelConsu >= 0) {
     if (fuelConsu == 0) {
-      clearInterval(fueldelay)
+      clearInterval(fuelInterval)
     }
     fuelBar.setDisplaySize(fuelConsu, 5)
   }
