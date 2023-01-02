@@ -1,24 +1,6 @@
-let config = {
-  type: Phaser.AUTO,
-  width: 800,
-  height: 600,
-  backgroundColor: 'black',
-  pixelArt: true,
-  title: 'Defend Border',
-  version: 'V0.3',
-  physics: {
-    default: 'arcade'
-  },
-  scene: {
-    preload: preload,
-    create: create,
-    update: update
-  }
-}
-
-let game = new Phaser.Game(config)
-let player, shoots, speed, shootAudio, lastFired = 0, keyboard, engineAudio, ammunitionCount = 50, ammunitionText, ammoBox, 
-ammoCheckCollider, ammoFlag, fuelBar, fuelConsu = 100, fuelInterval, fuelGallon, fuelCheckCollider, fuelFlag, ammoTimer, fuelTimer
+let game, player, shoots, speed, shootAudio, lastFired = 0, keyboard, engineAudio, ammunitionCount = 50, ammunitionText, ammoBox, 
+ammoCheckCollider, ammoFlag, fuelBar, fuelConsu = 100, fuelInterval, fuelGallon, fuelCheckCollider, fuelFlag, 
+ammoTimer, fuelTimer, shootCollider
 
 function preload() {
   this.load.image('sky', 'src/images/background/map1.png')
@@ -29,6 +11,10 @@ function preload() {
   this.load.image('fuelBack', 'src/images/HUD/fuelBarBackground.png')
   this.load.image('fuelBar', 'src/images/HUD/fuelBar.png')
   this.load.image('fuelGallon', 'src/images/sprites/fuel-gallon.png')
+  this.load.spritesheet('explosion', 'src/images/sprites/explosion.png', {
+    frameWidth: 100,
+    frameHeight: 100
+  })
   this.load.spritesheet('plane', 'src/images/sprites/plane.png', {
     frameWidth: 74,
     frameHeight: 20
@@ -46,7 +32,7 @@ function create() {
     config.height,
     'sky'
   )
-  // Animation Plane
+  // Animation Plane and Explosion
   this.anims.create({
     key: 'fly',
     frames: this.anims.generateFrameNumbers('plane', { frames: [0, 1] }),
@@ -55,13 +41,21 @@ function create() {
   })
   this.anims.create({
     key: 'fire',
-    frames: this.anims.generateFrameNumbers('plane', { frames: [2, 4] }),
+    frames: this.anims.generateFrameNumbers('plane', { frames: [2, 3, 4] }),
     frameRate: 60
   })
+  this.anims.create({
+    key: 'explosion',
+    frames: this.anims.generateFrameNumbers('explosion', { start: 0, end: 19}),
+    frameRate: 30,
+    hideOnComplete: true
+  })
+
   // Sound attributes
   engineAudio = this.sound.add('engineSound').setLoop(true)
   engineAudio.play({ volume: 0.5 })
   shootAudio = this.sound.add('shootAudio')
+
   // Key configurations
   keyboard = {
     keyS: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
@@ -71,15 +65,111 @@ function create() {
     keyDown: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN)
   }
   speed = Phaser.Math.GetSpeed(1, 300)
-  //fuel icons and system
+
+  // Fuel system
   this.add.image(660, 14, 'fuelIcon')
   let fuelBackground = this.add.image(720, 16, 'fuelBack')
-  fuelBar = this.add
-    .image(fuelBackground.x - 50, fuelBackground.y, 'fuelBar')
-    .setOrigin(0, 0.5)
+
+  fuelBar = this.add.image(fuelBackground.x - 50, fuelBackground.y, 'fuelBar').setOrigin(0, 0.5)
+
   fuelInterval = setInterval(() => {
     fuelConsu -= 5
   }, 5000)
+
+  const FuelGallon = new Phaser.Class({
+    Extends: Phaser.GameObjects.Image,
+
+    initialize: function FuelGallon(scene) {
+      Phaser.GameObjects.Image.call(this, scene, 0, 0, 'fuelGallon')
+      this.speed = Phaser.Math.GetSpeed(150, 1)
+    },
+
+    create: function () {
+      let y = Math.random() * (280 - 40) + 40
+      this.setPosition(790, y)
+      this.setActive(true)
+      this.setVisible(true)
+    },
+
+    update: function (time, delta) {
+      this.x -= this.speed * delta
+      if (this.x < 20) {
+        fuelFlag = false
+        this.setActive(false)
+        this.setVisible(false)
+      }
+    }
+  })
+
+  fuelGallon = this.physics.add.group({
+    classType: FuelGallon,
+    maxSize: 1,
+    runChildUpdate: true,
+  })
+
+  fuelTimer = setInterval(() => {
+    let fuelCan = fuelGallon.get()
+    if(fuelCan) {
+      fuelCan.create()
+      fuelFlag = true
+    }
+  }, 8000)
+
+  fuelCheckCollider = (player, fuelGallon) => {
+    if(fuelFlag){
+      fuelGallon.setActive(false).setVisible(false)
+      fuelFlag = false
+        fuelConsu = 100
+    }
+  }
+
+  // Ammo System
+  this.add.image(16, 16, 'ammoIcon')
+  ammunitionText = this.add.text(24, 10, `${ammunitionCount}`, {
+    fontFamily: 'nasa',
+    fontSize: '14px',
+    fill: '#000'
+  })
+
+  const AmmoBox = new Phaser.Class({
+    Extends: Phaser.GameObjects.Image,
+
+    initialize: function AmmoBox(scene) {
+      Phaser.GameObjects.Image.call(this, scene, 0, 0, 'ammo')
+      this.speed = Phaser.Math.GetSpeed(150, 1)
+    },
+
+    create: function () {
+      let y = Math.random() * (580 - 80) + 80
+      this.setPosition(790, y)
+      this.setActive(true)
+      this.setVisible(true)
+    },
+
+    update: function (time, delta) {
+      this.x -= this.speed * delta
+      if (this.x < 20) {
+        ammoFlag = false
+        this.setActive(false)
+        this.setVisible(false)
+      }
+    }
+  })
+
+  ammoBox = this.physics.add.group({
+    classType: AmmoBox,
+    maxSize: 1,
+    runChildUpdate: true
+  })
+
+  ammoTimer = setInterval(() => {
+    let ammunition = ammoBox.get()
+    if (ammunition) {
+      ammunition.create()
+      ammoFlag = true
+    }
+  }, 8000)
+
   ammoCheckCollider = (player, ammo) => {
     if (ammoFlag) {
       ammunitionCount += 25
@@ -88,17 +178,12 @@ function create() {
       ammoFlag = false
     }
   }
-  //ammo icons
-  this.add.image(16, 16, 'ammoIcon')
-  ammunitionText = this.add.text(24, 10, `${ammunitionCount}`, {
-    fontFamily: 'nasa',
-    fontSize: '14px',
-    fill: '#000'
-  })
-  //player sprites
+
+  // Player sprites and config
   player = this.physics.add.sprite(40, 300, 'player')
   player.setCollideWorldBounds(true).play('fly')
-  //shoot Class
+
+  // Fire system
   const Shoot = new Phaser.Class({
     Extends: Phaser.GameObjects.Image,
 
@@ -121,105 +206,28 @@ function create() {
       }
     }
   })
-  shoots = this.add.group({
+
+  shoots = this.physics.add.group({
     classType: Shoot,
-    maxSize: 12,
     runChildUpdate: true
   })
+  
+  shootCollider = (shoot, object) => {
+    let x = object.x
+    let y = object.y
+    if(shoot.active === true && object.active === true){
+      this.add.sprite(x, y).play('explosion')
+      object.setActive(false).setVisible(false)
+      shoot.setActive(false).setVisible(false)
+    }}
 
-  //Ammo Class
-  const AmmoBox = new Phaser.Class({
-    Extends: Phaser.GameObjects.Image,
-
-    initialize: function AmmoBox(scene) {
-      Phaser.GameObjects.Image.call(this, scene, 0, 0, 'ammo')
-      this.speed = Phaser.Math.GetSpeed(150, 1)
-    },
-
-    create: function () {
-      let y = Math.random() * (400 - 1) + 1
-      this.setPosition(780, y)
-      this.setActive(true)
-      this.setVisible(true)
-    },
-
-    update: function (time, delta) {
-      this.x -= this.speed * delta
-      if (this.x < 20) {
-        ammoFlag = false
-        this.setActive(false)
-        this.setVisible(false)
-      }
-    }
-  })
-  ammoBox = this.physics.add.group({
-    classType: AmmoBox,
-    maxSize: 1,
-    runChildUpdate: true
-  })
-  // Fuel Gallon Class
-  const FuelGallon = new Phaser.Class({
-    Extends: Phaser.GameObjects.Image,
-
-    initialize: function FuelGallon(scene) {
-      Phaser.GameObjects.Image.call(this, scene, 0, 0, 'fuelGallon')
-      this.speed = Phaser.Math.GetSpeed(150, 1)
-    },
-
-    create: function () {
-      let y = Math.random() * (400 - 1) + 1
-      this.setPosition(780, y)
-      this.setActive(true)
-      this.setVisible(true)
-    },
-
-    update: function (time, delta) {
-      this.x -= this.speed * delta
-      if (this.x < 20) {
-        fuelFlag = false
-        this.setActive(false)
-        this.setVisible(false)
-      }
-    }
-  })
-  fuelGallon = this.physics.add.group({
-    classType: FuelGallon,
-    maxSize: 1,
-    runChildUpdate: true,
-  })
-
-  //interval create ammobox
- ammoTimer = setInterval(() => {
-    let ammunition = ammoBox.get()
-    if (ammunition) {
-      ammunition.create()
-      ammoFlag = true
-    }
-  }, 8000)
-
- fuelTimer = setInterval(() => {
-    let fuelCan = fuelGallon.get()
-    if(fuelCan) {
-      fuelCan.create()
-      fuelFlag = true
-    }
-  }, 8000)
-
-  fuelCheckCollider = (player, fuelGallon) => {
-    if(fuelFlag){
-      fuelGallon.setActive(false).setVisible(false)
-      fuelFlag = false
-      if(fuelConsu < 90) {
-        fuelConsu += 10
-      }
-    }
-  }
+  // Physics player, shoot, ammobox, fuelgallon and enemy
+  this.physics.add.collider(shoots, ammoBox, shootCollider)
+  this.physics.add.overlap(player, fuelGallon, fuelCheckCollider, null, this)
+  this.physics.add.overlap(player, ammoBox, ammoCheckCollider, null, this)
 }
 
 function update(time, delta) {
-  // Check collision player and ammo
-  this.physics.add.overlap(ammoBox, player, ammoCheckCollider, null, this)
-  this.physics.add.overlap(fuelGallon, player, fuelCheckCollider, null, this)
   // Background move
   this.background.tilePositionX += 0.5
   // Controls move and fire
@@ -257,3 +265,22 @@ function update(time, delta) {
     fuelBar.setDisplaySize(fuelConsu, 5)
   }
 }
+
+let config = {
+  type: Phaser.AUTO,
+  width: 800,
+  height: 600,
+  backgroundColor: 'black',
+  pixelArt: true,
+  title: 'Defend Border',
+  version: 'V0.5',
+  physics: {
+    default: 'arcade'
+  },
+  scene: {
+    preload: preload,
+    create: create,
+    update: update
+  }
+}
+  game = new Phaser.Game(config)
