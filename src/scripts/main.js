@@ -1,6 +1,5 @@
 let game, player, shoots, speed, shootAudio, lastFired = 0, keyboard, engineAudio, ammunitionCount = 50, ammunitionText, ammoBox, 
-ammoCheckCollider, ammoFlag, fuelBar, fuelConsu = 100, fuelInterval, fuelGallon, fuelCheckCollider, fuelFlag, 
-ammoTimer, fuelTimer, shootCollider
+ammoCheckCollider, fuelBar, fuelConsu = 100, fuelInterval, fuelGallon, fuelCheckCollider, ammoTimer, fuelTimer, warningAudio, shootCollider
 
 function preload() {
   this.load.image('sky', 'src/images/background/map1.png')
@@ -21,6 +20,7 @@ function preload() {
   })
   this.load.audio('shootAudio', 'src/audio/shoot.WAV')
   this.load.audio('engineSound', 'src/audio/engine.wav')
+  this.load.audio('alertSound', 'src/audio/warning.wav')
 }
 
 function create() {
@@ -55,7 +55,7 @@ function create() {
   engineAudio = this.sound.add('engineSound').setLoop(true)
   engineAudio.play({ volume: 0.5 })
   shootAudio = this.sound.add('shootAudio')
-
+  warningAudio = this.sound.add('alertSound').setLoop(true)
   // Key configurations
   keyboard = {
     keyS: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
@@ -94,7 +94,6 @@ function create() {
     update: function (time, delta) {
       this.x -= this.speed * delta
       if (this.x < 20) {
-        fuelFlag = false
         this.setActive(false)
         this.setVisible(false)
       }
@@ -111,15 +110,13 @@ function create() {
     let fuelCan = fuelGallon.get()
     if(fuelCan) {
       fuelCan.create()
-      fuelFlag = true
     }
   }, 8000)
 
   fuelCheckCollider = (player, fuelGallon) => {
-    if(fuelFlag){
+    if(player.active === true && fuelGallon.active === true){
       fuelGallon.setActive(false).setVisible(false)
-      fuelFlag = false
-        fuelConsu = 100
+      fuelConsu = 100
     }
   }
 
@@ -149,7 +146,6 @@ function create() {
     update: function (time, delta) {
       this.x -= this.speed * delta
       if (this.x < 20) {
-        ammoFlag = false
         this.setActive(false)
         this.setVisible(false)
       }
@@ -166,16 +162,14 @@ function create() {
     let ammunition = ammoBox.get()
     if (ammunition) {
       ammunition.create()
-      ammoFlag = true
     }
   }, 8000)
 
   ammoCheckCollider = (player, ammo) => {
-    if (ammoFlag) {
+    if(player.active === true && ammo.active === true) {
       ammunitionCount += 25
       ammunitionText.setText(`${ammunitionCount}`)
       ammo.setActive(false).setVisible(false)
-      ammoFlag = false
     }
   }
 
@@ -223,6 +217,7 @@ function create() {
 
   // Physics player, shoot, ammobox, fuelgallon and enemy
   this.physics.add.collider(shoots, ammoBox, shootCollider)
+  this.physics.add.collider(shoots, fuelGallon, shootCollider)
   this.physics.add.overlap(player, fuelGallon, fuelCheckCollider, null, this)
   this.physics.add.overlap(player, ammoBox, ammoCheckCollider, null, this)
 }
@@ -263,6 +258,12 @@ function update(time, delta) {
       clearInterval(fuelInterval)
     }
     fuelBar.setDisplaySize(fuelConsu, 5)
+  }
+  if (fuelConsu == 20) {
+    warningAudio.play({ volume: 0.5 })
+  }
+  if (fuelConsu > 20) {
+    warningAudio.stop()
   }
 }
 
