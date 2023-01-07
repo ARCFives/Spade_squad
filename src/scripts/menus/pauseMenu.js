@@ -4,24 +4,20 @@ export let Menu = {
   create: create
 }
 
-function preload () {
-}
+function preload() {}
 
 function create() {
+  let resumeButton = this.add.text(320, 180, `Continuar`, {
+      fontFamily: 'nasa',
+      fontSize: '32px',
+      color: '#6a6a6a'
+    }).setInteractive()
 
-this.add.text(400, 300, `Pausado`, {
-    fontFamily: 'nasa',
-    fontSize: '32px',
-    fill: '#fff',
-    color: 'white'
+  resumeButton.on('pointerover', () => resumeButton.setColor('#f00'))
+  resumeButton.on('pointerout', () => resumeButton.setColor('#6a6a6a'))
+  resumeButton.on('pointerup', () => {
+      this.input.stopPropagation()
+      this.scene.resume('map1')
+      this.scene.stop('menu')
   })
-  
-  
-  this.input.on('pointerdown', function () {
-    
-    this.input.stopPropagation()
-    this.scene.resume('map1')
-    this.scene.stop('menu')
-
-}, this);
 }

@@ -1,4 +1,4 @@
-let player, shoots, shootAudio, lastFired = 0, keyboard, engineAudio, ammunitionCount = 50, ammunitionText, ammoBox, fuelBar, fuelConsu = 100, fuelGallon, warningAudio, shootCollider
+let player, shoots, shootAudio, lastFired, keyboard, engineAudio, ammunitionCount, ammunitionText, ammoBox, fuelBar, fuelGallon, warningAudio, shootCollider, fuelConsu
 
 function preload() {
   this.load.image('sky', 'src/images/background/map1.png')
@@ -27,6 +27,9 @@ function preload() {
 }
 
 function create() {
+  ammunitionCount = 50
+  fuelConsu = 100
+  lastFired = 0
   // Background Scene
   this.background = this.add.tileSprite(
     400,
@@ -261,6 +264,11 @@ function update(time, delta) {
       lastFired = time + 50
     }
   }
+  if(keyboard.keyEsc.isDown){
+    this.input.stopPropagation()
+    this.scene.pause('map1')
+    this.scene.launch('menu')
+  }
   // Check ammo count
   if (ammunitionCount < 15) {
     ammunitionText.setFill('red')
@@ -269,22 +277,22 @@ function update(time, delta) {
   }
   // Check fuel level
   if (fuelConsu >= 0) {
-    if (fuelConsu == 0) {
-      clearInterval(fuelInterval)
-    }
     fuelBar.setDisplaySize(fuelConsu, 5)
+    if (fuelConsu == 0) {
+      this.input.stopPropagation()
+      this.scene.stop('map1')
+      this.scene.start('gameover')
+      engineAudio.stop()
+      warningAudio.stop()
+    } 
   }
-  if (fuelConsu == 20) {
+  if (fuelConsu == 25) {
     warningAudio.play({ volume: 0.5 })
   }
-  if (fuelConsu > 20) {
+  if (fuelConsu > 25) {
     warningAudio.stop()
   }
-  if(keyboard.keyEsc.isDown){
-    this.input.stopPropagation()
-    this.scene.pause('map1')
-    this.scene.launch('menu')
-  }
+  
 }
 
 export let Map1 = {
