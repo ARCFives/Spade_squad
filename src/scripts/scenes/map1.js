@@ -1,4 +1,4 @@
-let player, shoots, shootAudio, lastFired, keyboard, engineAudio, ammunitionCount, ammunitionText, ammoBox, fuelBar, fuelGallon, warningAudio, shootCollider, fuelConsu
+let player, shoots, shootAudio, lastFired, keyboard, engineAudio, ammunitionCount, ammunitionText, ammoBox, fuelBar, fuelGallon, warningAudio, shootCollider, fuelConsu, enemys, enemyDelay, gameOver, scoreText, score, scoreAtributes
 
 function preload() {
   this.load.image('sky', 'src/images/background/map1.png')
@@ -27,9 +27,19 @@ function preload() {
 }
 
 function create() {
-  ammunitionCount = 50
+  // Variables atrributes
+  ammunitionCount = 25
   fuelConsu = 100
   lastFired = 0
+  enemyDelay = 2000
+  gameOver = () => {
+    this.input.stopPropagation()
+    this.scene.stop('map1')
+    this.scene.start('gameover')
+    engineAudio.stop()
+    warningAudio.stop()
+  }
+  score = undefined
   // Background Scene
   this.background = this.add.tileSprite(
     400,
@@ -77,6 +87,13 @@ function create() {
     keyDown: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN),
     keyEsc: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC),
   }
+
+  // Score system
+  scoreText = this.add.text(350, 10, `000000`, {
+    fontFamily: 'nasa',
+    fontSize: '14px',
+    fill: '#000'
+  })
 
   // Fuel system
   this.add.image(660, 14, 'fuelIcon')
@@ -195,6 +212,48 @@ function create() {
   player = this.physics.add.sprite(40, 300, 'player')
   player.setCollideWorldBounds(true).play('fly')
 
+  // Enemys
+  const Enemy = new Phaser.Class({
+    Extends: Phaser.GameObjects.Sprite,
+
+    initialize: function Enemy(scene) {
+      Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 'enemy')
+      this.speed = Phaser.Math.GetSpeed(90, 1)
+    },
+
+    create: function () {
+      let y = Math.random() * (580 - 40) + 40
+      this.setPosition(790, y)
+      this.setActive(true)
+      this.setVisible(true)
+      this.play('enemyFly')
+    },
+
+    update: function (time, delta) {
+      this.x -= this.speed * delta
+      if (this.x < 20) {
+        gameOver()
+        this.setActive(false)
+        this.setVisible(false)
+      }
+    }
+  })
+
+  enemys = this.physics.add.group({
+    classType: Enemy,
+    maxSize: 10,
+    runChildUpdate: true
+  })
+
+  const enemyTimer = this.time.addEvent({ delay: enemyDelay, callback: createEnemy, callbackScope: this, loop: true })
+
+  function createEnemy() {
+    let enemy = enemys.get()
+    if (enemy) {
+      enemy.create()
+    }
+  }
+
   // Fire system
   const Shoot = new Phaser.Class({
     Extends: Phaser.GameObjects.Image,
@@ -232,12 +291,38 @@ function create() {
       object.setActive(false).setVisible(false)
       shoot.setActive(false).setVisible(false)
     }}
+  
+  const enemyHit = (shoot, enemy) => {
+    let x = enemy.x
+    let y = enemy.y
+    if (shoot.active === true && enemy.active === true){
+      if (score === undefined) {
+        score = 100
+      }else {
+        score += 100
+      }
+      if (score < 1000) {
+        scoreText.setText(`0000${score}`)
+      } else if (score >= 1000) {
+        scoreText.setText(`000${score}`)
+      } else if (score >= 10000) {
+        scoreText.setText(`00${score}`)
+      } else {
+        scoreText.setText(`0${score}`)
+      }
+      this.add.sprite(x,y).play('explosion')
+      shoot.setActive(false).setVisible(false)
+      enemy.setActive(false).setVisible(false)
+    }
+  }
 
   // Physics player, shoot, ammobox, fuelgallon and enemy
   this.physics.add.collider(shoots, ammoBox, shootCollider)
   this.physics.add.collider(shoots, fuelGallon, shootCollider)
+  this.physics.add.collider(shoots, enemys, enemyHit)
   this.physics.add.overlap(player, fuelGallon, fuelCheckCollider, null, this)
   this.physics.add.overlap(player, ammoBox, ammoCheckCollider, null, this)
+  this.physics.add.overlap(player, enemys, gameOver, null, this)
 }
 
 function update(time, delta) {
@@ -279,11 +364,7 @@ function update(time, delta) {
   if (fuelConsu >= 0) {
     fuelBar.setDisplaySize(fuelConsu, 5)
     if (fuelConsu == 0) {
-      this.input.stopPropagation()
-      this.scene.stop('map1')
-      this.scene.start('gameover')
-      engineAudio.stop()
-      warningAudio.stop()
+      gameOver()
     } 
   }
   if (fuelConsu == 25) {
