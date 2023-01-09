@@ -1,6 +1,23 @@
-let player, shoots, shootAudio, lastFired, keyboard, engineAudio, ammunitionCount, ammunitionText, ammoBox, fuelBar, fuelGallon, warningAudio, shootCollider, fuelConsu, enemys, enemyDelay, gameOver, scoreText, score, scoreAtributes
+let player, shoots, shootAudio, lastFired, keyboard, ammunitionCount, ammunitionText, ammoBox, fuelBar, fuelGallon, shootCollider, fuelConsu, enemys, enemyDelay, gameOver, scoreText, score, scoreAtributes
+
+export let engineAudio, warningAudio
 
 function preload() {
+  let progressBar = this.add.graphics();
+  let progressBox = this.add.graphics();
+  progressBox.fillStyle(0x222222, 0.8);
+  progressBox.fillRect(240, 270, 320, 50);
+  
+  this.load.on('progress', function (value) {
+    progressBar.clear()
+    progressBar.fillStyle(0xffffff, 1)
+    progressBar.fillRect(250, 280, 300 * value, 30)
+})         
+  this.load.on('complete', function () {
+    progressBar.destroy()
+    progressBox.destroy()
+})
+
   this.load.image('sky', 'src/images/background/map1.png')
   this.load.image('shoot', 'src/images/sprites/shoot.png')
   this.load.image('ammo', 'src/images/sprites/ammunition-box.png')
@@ -33,6 +50,12 @@ function create() {
   lastFired = 0
   enemyDelay = 2000
   gameOver = () => {
+    if (localStorage.score == null) {
+      localStorage.setItem('score', score)
+    }else if (parseInt(localStorage.score) < score) {
+      localStorage.setItem('score', score)
+    }
+    
     this.input.stopPropagation()
     this.scene.stop('map1')
     this.scene.start('gameover')
