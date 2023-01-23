@@ -29,4 +29,6 @@ Javascript, HTML, CSS, <a href="https://phaser.io/">Phaser.</a>
 
 Projeto me ajudou a melhorar meu raciocínio lógico, assim como melhorar minha skill em javascript. Minha maior dificuldade foi entender o framework.
 
-<h2 align='center'><a href="https://arcfives.github.io/Spade_squad//" target="_blank">Confira aqui</a></h2>
+## Instalação
+
+Faça clone do repositório, abra com o VSCode utilize a extensão Live Server e rode o "index.html". Ou baixe o zip e rode o "index.html" em seu navegador.
