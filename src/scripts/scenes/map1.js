@@ -3,10 +3,19 @@ let player, shoots, shootAudio, lastFired, keyboard, ammunitionCount, ammunition
 export let engineAudio, warningAudio
 
 function preload() {
-  let progressBar = this.add.graphics();
-  let progressBox = this.add.graphics();
-  progressBox.fillStyle(0x222222, 0.8);
-  progressBox.fillRect(240, 270, 320, 50);
+  let progressBar = this.add.graphics()
+  let progressBox = this.add.graphics()
+  let loadingText = this.make.text({
+    x: 315,
+    y: 220,
+    text: 'Carrengando...',
+    style: {
+        font: '20px nasa',
+        fill: '#ffffff'
+    }
+})
+  progressBox.fillStyle(0x222222, 0.8)
+  progressBox.fillRect(240, 270, 320, 50)
   
   this.load.on('progress', function (value) {
     progressBar.clear()
@@ -16,6 +25,7 @@ function preload() {
   this.load.on('complete', function () {
     progressBar.destroy()
     progressBox.destroy()
+    loadingText.destroy()
 })
 
   this.load.image('sky', 'src/images/background/map1.png')

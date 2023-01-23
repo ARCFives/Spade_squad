@@ -31,4 +31,4 @@ Projeto me ajudou a melhorar meu raciocínio lógico, assim como melhorar minha 
 
 ## Instalação
 
-Faça clone do repositório, abra com o VSCode utilize a extensão Live Server e rode o "index.html". Ou baixe o zip e rode o "index.html" em seu navegador.
+Faça clone do repositório ou baixe o zip, abra com o VSCode utilize a extensão Live Server e rode o "index.html".

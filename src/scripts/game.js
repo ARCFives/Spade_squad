@@ -12,7 +12,7 @@ export let config = {
   backgroundColor: '#000000',
   pixelArt: true,
   title: 'Spade squad',
-  version: '1.0.0',
+  version: '1.0.1',
   physics: {
     default: 'arcade',
     debug: false
