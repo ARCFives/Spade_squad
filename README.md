@@ -1,14 +1,14 @@
-# Spade squad
+# :spades: Spade squad
 
 <div align='center'>
 <img src="https://user-images.githubusercontent.com/86669854/211409919-e7a8b10e-999a-430b-901b-8b961b47ac48.png">
 </div>
 
-### Sinopse
+### :scroll: Sinopse
 
 <p>Você é membro do esquadrão “spade”, que fiscaliza a fronteira do país. Pilote seu caça, derrube aviões de traficantes de armas e drogas, antes que cruzem a fronteira. Confira se tem munição suficiente, e não esqueça de reabastecer seu combústivel. </p>
 
-### Sobre
+### :clapper: Sobre
 
 <div align='center'>
 
@@ -21,14 +21,10 @@
 * No canto superior esquerdo, está sua quantidade de munição. Pegue caixas de munição que acrescentaram uma certa quantia ao seu arsenal.
 * Para consultar os controles, no menu principal click em **CONTROLES**.
 
-### Tecnologias
+### :hammer_and_wrench: Tecnologias
 
-Javascript, HTML, CSS, <a href="https://phaser.io/">Phaser.</a>
+[![My Skills](https://skillicons.dev/icons?i=js)](https://skillicons.dev)
 
-### Desafios
-
-Projeto me ajudou a melhorar meu raciocínio lógico, assim como melhorar minha skill em javascript. Minha maior dificuldade foi entender o framework.
-
-## Instalação
+## :desktop_computer: Instalação
 
 Faça clone do repositório ou baixe o zip, abra com o VSCode utilize a extensão Live Server e rode o "index.html".
