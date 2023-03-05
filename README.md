@@ -27,4 +27,10 @@
 
 ## :desktop_computer: Instalação
 
-Faça clone do repositório ou baixe o zip, abra com o VSCode utilize a extensão Live Server e rode o "index.html".
+Para baixar às dependências, vai na raiz do projeto e use o código:
+
+<code>  npm i  ou npm install</code>
+
+## :joystick: Teste online
+
+<div align="center"><h2><a href="https://arcfives.github.io/Spade_squad/" >Demo</a></h2></div>
