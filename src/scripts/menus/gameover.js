@@ -18,12 +18,12 @@ function create() {
   this.input.on('pointerdown', function () {
     this.input.stopPropagation()
     this.scene.stop('gameover')
-    this.scene.start('map1')
+    this.scene.start('Amazon')
 }, this)
 
 this.input.keyboard.on('keydown-ENTER', () => {
   this.input.stopPropagation()
   this.scene.stop('gameover')
-  this.scene.start('map1')
+  this.scene.start('Amazon')
 })
 }

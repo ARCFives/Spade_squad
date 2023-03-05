@@ -1,4 +1,4 @@
-import { config } from '../game.js'
+import { config } from '../script.js'
 
 export let mainMenu = {
   key: 'mainmenu',
@@ -11,7 +11,7 @@ function preload() {
   let progressBox = this.add.graphics()
   let loadingText = this.make.text({
     x: 315,
-    y: 220,
+    y: 450,
     text: 'Carrengando...',
     style: {
         font: '20px nasa',
@@ -19,12 +19,12 @@ function preload() {
     }
 })
   progressBox.fillStyle(0x222222, 0.8)
-  progressBox.fillRect(240, 270, 320, 50)
+  progressBox.fillRect(240, 480, 320, 12)
   
   this.load.on('progress', function (value) {
     progressBar.clear()
-    progressBar.fillStyle(0xffffff, 1)
-    progressBar.fillRect(250, 280, 300 * value, 30)
+    progressBar.fillStyle(0x880000, 1)
+    progressBar.fillRect(240, 480, 300 * value, 12)
 })         
   this.load.on('complete', function () {
     progressBar.destroy()
@@ -56,7 +56,7 @@ function create() {
   startButton.on('pointerup', () => {
     this.input.stopPropagation()
     this.scene.stop('mainmenu')
-    this.scene.start('map1')
+    this.scene.start('Amazon')
   })
 
   let controlsButton = this.add.text(330, 290, 'Controles', {
