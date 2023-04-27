@@ -1,6 +1,6 @@
 {
   "name": "spade_squad",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "<div align='center'>\r <img src=\"https://user-images.githubusercontent.com/86669854/211409919-e7a8b10e-999a-430b-901b-8b961b47ac48.png\">\r </div>",
   "main": "index.js",
   "scripts": {

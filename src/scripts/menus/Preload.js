@@ -1,6 +1,6 @@
 import Phaser from "phaser"
-
 export class Preload extends Phaser.Scene {
+
   constructor() {
     super({key: 'Preload'})
   }
@@ -67,8 +67,33 @@ export class Preload extends Phaser.Scene {
   }
 
   create() {
+    //Animations
+    this.anims.create({
+      key: 'fly',
+      frames: this.anims.generateFrameNumbers('plane', { frames: [0, 1] }),
+      frameRate: 10,
+      repeat: -1
+    })
+    this.anims.create({
+      key: 'enemyFly',
+      frames: this.anims.generateFrameNumbers('enemy', {frames: [0, 1, 2, 3]}),
+      frameRate: 10,
+      repeat: -1
+    })
+    this.anims.create({
+      key: 'fire',
+      frames: this.anims.generateFrameNumbers('plane', { frames: [2, 3, 4] }),
+      frameRate: 60
+    })
+    this.anims.create({
+      key: 'explosion',
+      frames: this.anims.generateFrameNumbers('explosion', { start: 0, end: 19}),
+      frameRate: 30,
+      hideOnComplete: true
+    })
+
     this.scene.stop('Preload')
     this.scene.start('MainMenu')
-  }
 
+  }
 }

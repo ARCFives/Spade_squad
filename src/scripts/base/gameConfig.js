@@ -7,6 +7,13 @@ import { Amazon } from '../scenes/Amazon.js'
 import { Preload } from '../menus/Preload.js'
 import Phaser from 'phaser'
 
+export const initialState = {
+  ammunitionInitial: 25,
+  fuelInitial: 100,
+  lastFired: 0,
+  scoreCount: undefined
+}
+
 let game
 export let config = {
   type: Phaser.AUTO,
@@ -15,11 +22,12 @@ export let config = {
   backgroundColor: '#000000',
   pixelArt: true,
   title: 'Spade squad',
-  version: '1.0.2',
+  version: '1.0.3',
   physics: {
     default: 'arcade',
     debug: false
   },
+  autoFocus: true,
   scene: [Preload, MainMenu, MenuControl, Amazon, MenuPause, Gameover]
 }
 game = new Phaser.Game(config)

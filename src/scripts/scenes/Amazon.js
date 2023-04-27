@@ -1,10 +1,11 @@
+import { initialState } from "../base/gameConfig.js"
 import { AmmoBox } from "../gameObjects/ammoSystem/AmmoClass.js"
 import { Enemy } from "../gameObjects/enemySystem/EnemyClass.js"
 import { FuelGallon } from "../gameObjects/fuelSystem/FuelClass.js"
 import { Shoot } from "../gameObjects/shootSystem/ShootClass.js"
 import Phaser from "phaser"
 
-let player, shoots, shootAudio, lastFired, keyboard, ammunitionText, ammunitionCount, ammoBoxGroup, fuelBar, fuelGallon, fuelConsu, enemys, enemyDelay, scoreText, score
+let player, shoots, shootAudio, lastFired, keyboard, ammunitionText, ammunitionCount, ammoBoxGroup, fuelBar, fuelGallon, fuelConsu, enemys, enemyDelay = 2000, scoreText, score
 
 export let engineAudio, warningAudio, gameover
 
@@ -37,10 +38,10 @@ function preload() {
 
 function create() {
   // Variables atrributes
-  ammunitionCount = 25
-  fuelConsu = 100
-  lastFired = 0
-  enemyDelay = 2000
+  ammunitionCount = initialState.ammunitionInitial
+  fuelConsu = initialState.fuelInitial
+  lastFired = initialState.lastFired
+  score = initialState.scoreCount
   gameover = () => {
     if (localStorage.score == null) {
       localStorage.setItem('score', score)
@@ -49,12 +50,11 @@ function create() {
     }
     
     this.input.stopPropagation()
-    this.scene.stop('Amazon')
+    this.scene.stop(this)
     this.scene.start('Gameover')
     engineAudio.stop()
     warningAudio.stop()
   }
-  score = undefined
   // Background Scene
   this.background = this.add.tileSprite(
     400,
@@ -63,30 +63,6 @@ function create() {
     600,
     'sky'
   )
-  // Animation Plane and Explosion
-  this.anims.create({
-    key: 'fly',
-    frames: this.anims.generateFrameNumbers('plane', { frames: [0, 1] }),
-    frameRate: 10,
-    repeat: -1
-  })
-  this.anims.create({
-    key: 'enemyFly',
-    frames: this.anims.generateFrameNumbers('enemy', {frames: [0, 1, 2, 3]}),
-    frameRate: 10,
-    repeat: -1
-  })
-  this.anims.create({
-    key: 'fire',
-    frames: this.anims.generateFrameNumbers('plane', { frames: [2, 3, 4] }),
-    frameRate: 60
-  })
-  this.anims.create({
-    key: 'explosion',
-    frames: this.anims.generateFrameNumbers('explosion', { start: 0, end: 19}),
-    frameRate: 30,
-    hideOnComplete: true
-  })
 
   // Sound attributes
   engineAudio = this.sound.add('engineSound').setLoop(true)
@@ -116,7 +92,7 @@ function create() {
 
   fuelBar = this.add.image(fuelBackground.x - 50, fuelBackground.y, 'fuelBar').setOrigin(0, 0.5)
 
-  const fuelInterval = this.time.addEvent({ delay: 5000, callback: consumeFuel, callbackScope: this, loop: true })
+  this.time.addEvent({ delay: 5000, callback: consumeFuel, callbackScope: this, loop: true })
 
   function consumeFuel() {
     fuelConsu -= 5
@@ -128,7 +104,7 @@ function create() {
     runChildUpdate: true,
   })
 
-  const fuelTimer = this.time.addEvent({delay:30000, callback: createFuelGallon, callbackScope: this, loop: true})
+  this.time.addEvent({delay:30000, callback: createFuelGallon, callbackScope: this, loop: true})
 
   function createFuelGallon() {
     let fuelCan = fuelGallon.get()
@@ -158,7 +134,7 @@ function create() {
     runChildUpdate: true
   })
 
-  const ammoTimer = this.time.addEvent({ delay: 8000, callback: createAmmoBox, callbackScope: this, loop: true })
+  this.time.addEvent({ delay: 8000, callback: createAmmoBox, callbackScope: this, loop: true })
 
   function ammoCheckCollider (player, ammo) {
     if(player.active === true && ammo.active === true) {
@@ -186,7 +162,7 @@ function create() {
     runChildUpdate: true
   })
 
-  const enemyTimer = this.time.addEvent({ delay: enemyDelay, callback: createEnemy, callbackScope: this, loop: true })
+  this.time.addEvent({ delay: enemyDelay, callback: createEnemy, callbackScope: this, loop: true })
 
   function createEnemy() {
     let enemy = enemys.get()
