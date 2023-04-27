@@ -1,29 +1,33 @@
-export let Gameover = {
-  key: 'gameover',
-  preload: preload,
-  create: create
-}
+import Phaser from 'phaser'
+export class Gameover extends Phaser.Scene {
+  textStyle = { fontFamily: 'nasa', fill: '#d4d4d4' }
 
-const textStyle = {fontFamily: 'nasa', fill: '#d4d4d4'}
+  constructor() {
+    super({ key: 'Gameover' })
+  }
 
-function preload() {
-  this.load.image('gameover', 'src/images/screens/gameover.jpg')
-}
+  create() {
+    this.add.image(400, 300, 'gameover')
+    this.add.text(300, 100, 'Game Over', { fontSize: '32px', ...this.textStyle })
+    this.add.text(150, 300, 'Click ou tecle ENTER para reset', {
+      fontSize: '28px',
+      ...this.textStyle
+    })
 
-function create() {
-  this.add.image(400, 300, 'gameover')
-  this.add.text(300,100, 'Game Over', {fontSize: '32px', ...textStyle})
-  this.add.text(150, 300, 'Click ou tecle ENTER para reset', {fontSize: '28px', ...textStyle})
+    this.input.on(
+      'pointerdown',
+      function () {
+        this.input.stopPropagation()
+        this.scene.stop('Gameover')
+        this.scene.start('Amazon')
+      },
+      this
+    )
 
-  this.input.on('pointerdown', function () {
-    this.input.stopPropagation()
-    this.scene.stop('gameover')
-    this.scene.start('Amazon')
-}, this)
-
-this.input.keyboard.on('keydown-ENTER', () => {
-  this.input.stopPropagation()
-  this.scene.stop('gameover')
-  this.scene.start('Amazon')
-})
+    this.input.keyboard.on('keydown-ENTER', () => {
+      this.input.stopPropagation()
+      this.scene.stop('Gameover')
+      this.scene.start('Amazon')
+    })
+  }
 }

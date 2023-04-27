@@ -33,30 +33,6 @@ function preload() {
     progressBox.destroy()
     loadingText.destroy()
 })
-
-  this.load.image('sky', 'src/images/background/map1.png')
-  this.load.image('shoot', 'src/images/sprites/shoot.png')
-  this.load.image('ammo', 'src/images/sprites/ammunition-box.png')
-  this.load.image('ammoIcon', 'src/images/HUD/ammoIcon.png')
-  this.load.image('fuelIcon', 'src/images/HUD/fuelCan.png')
-  this.load.image('fuelBack', 'src/images/HUD/fuelBarBackground.png')
-  this.load.image('fuelBar', 'src/images/HUD/fuelBar.png')
-  this.load.image('fuelGallon', 'src/images/sprites/fuel-gallon.png')
-  this.load.spritesheet('explosion', 'src/images/sprites/explosion.png', {
-    frameWidth: 100,
-    frameHeight: 100
-  })
-  this.load.spritesheet('plane', 'src/images/sprites/a29.png', {
-    frameWidth: 74,
-    frameHeight: 20
-  })
-  this.load.spritesheet('enemy', 'src/images/sprites/cessna.png', {
-    frameWidth: 80,
-    frameHeight: 28
-  })
-  this.load.audio('shootAudio', 'src/audio/shoot.WAV')
-  this.load.audio('engineSound', 'src/audio/engine.wav')
-  this.load.audio('alertSound', 'src/audio/warning.wav')
 }
 
 function create() {
@@ -74,7 +50,7 @@ function create() {
     
     this.input.stopPropagation()
     this.scene.stop('Amazon')
-    this.scene.start('gameover')
+    this.scene.start('Gameover')
     engineAudio.stop()
     warningAudio.stop()
   }
@@ -294,7 +270,7 @@ function update(time, delta) {
   if(keyboard.keyEsc.isDown){
     this.input.stopPropagation()
     this.scene.pause('Amazon')
-    this.scene.launch('menu')
+    this.scene.launch('MenuPause')
   }
   // Check ammo count
   if (ammunitionCount < 15) {

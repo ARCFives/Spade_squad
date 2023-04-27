@@ -1,6 +1,5 @@
 import Phaser from "phaser"
-
-import { gameover } from '../../scenes/Amazon.js'
+import { gameover } from "../../scenes/Amazon"
 
 export const Enemy = new Phaser.Class({
   Extends: Phaser.GameObjects.Sprite,
@@ -21,9 +20,9 @@ export const Enemy = new Phaser.Class({
   update: function (time, delta) {
     this.x -= this.speed * delta
     if (this.x < 20) {
-      gameover()
       this.setActive(false)
       this.setVisible(false)
+      gameover()
     }
   }
 })
