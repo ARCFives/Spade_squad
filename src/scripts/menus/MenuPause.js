@@ -14,7 +14,7 @@ export class MenuPause extends Phaser.Scene {
 
   create() {
     let resumeButton = this.add
-      .text(300, 180, `Continuar`, { ...this.styleButtons })
+      .text(300, 230, `Continuar`, { ...this.styleButtons })
       .setInteractive()
     resumeButton.on('pointerover', () => resumeButton.setColor('#a00'))
     resumeButton.on('pointerout', () => resumeButton.setColor('#6a6a6a'))
@@ -25,7 +25,7 @@ export class MenuPause extends Phaser.Scene {
     })
 
     let mainMenuButton = this.add
-      .text(250, 230, `Menu Principal`, { ...this.styleButtons })
+      .text(250, 290, `Menu Principal`, { ...this.styleButtons })
       .setInteractive()
     mainMenuButton.on('pointerover', () => mainMenuButton.setColor('#a00'))
     mainMenuButton.on('pointerout', () => mainMenuButton.setColor('#6a6a6a'))

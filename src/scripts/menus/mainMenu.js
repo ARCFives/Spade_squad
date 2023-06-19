@@ -31,7 +31,6 @@ export class MainMenu extends Phaser.Scene {
       progressBox.destroy()
       loadingText.destroy()
     })
-
   }
 
   create() {
