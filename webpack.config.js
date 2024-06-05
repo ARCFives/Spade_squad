@@ -1,8 +1,8 @@
-const path = require('path')
+const path = require('path');
 
 module.exports = {
-  mode: 'production',
-  entry: './src/scripts/base/gameConfig.js',
+  mode: 'development',
+  entry: './src/scripts/config/launcherGame.js',
   output: {
     filename: 'game.js',
     path: path.resolve(__dirname, 'src/scripts/')
@@ -24,4 +24,4 @@ module.exports = {
   devServer: {
     contentBase: './'
   }
-}
+};
