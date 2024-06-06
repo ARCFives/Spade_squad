@@ -7,17 +7,18 @@ export class Amazon extends Phaser.Scene {
         this.player = null;
     }
 
-    addPlayer() {
+    addPlayer(shootSound) {
         this.trailLayer = this.add.layer();
         this.players = this.add.group();
-        this.player = new Player(this, 40, 300, 'player', 150);
+        this.player = new Player(this, 40, 300, 'player', 150, shootSound);
         this.players.add(this.player);
     }
 
     preload() {}
 
     create() {
-        this.addPlayer();
+        this.shootSound = this.sound.add('shootAudio');
+        this.addPlayer(this.shootSound);
     }
 
     update(time) {

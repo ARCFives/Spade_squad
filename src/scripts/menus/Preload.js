@@ -40,6 +40,7 @@ export class Preload extends Phaser.Scene {
       });
 
     this.load.image('shoot', './src/images/sprites/shoot.png');
+    this.load.audio('shootAudio', './src/audio/shoot.WAV');
     }
 
     create() {

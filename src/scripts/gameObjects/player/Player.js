@@ -1,13 +1,15 @@
 import Phaser from 'phaser';
 
 export class Player extends Phaser.GameObjects.Sprite {
-    constructor(scene, x, y, name, speed) {
+    constructor(scene, x, y, name, speed, shootSound) {
         super(scene, x, y, name);
         scene.add.existing(this);
         scene.physics.add.existing(this);
         this.name = name;
         this.speed = speed;
         this.lastFired = 0;
+        this.ammunitonCount = 25;
+        this.shootSound = shootSound;
         this.setOrigin(1, 0.5);
         this.body.setCollideWorldBounds(true);
         this.shoots = scene.physics.add.group();
@@ -40,10 +42,17 @@ export class Player extends Phaser.GameObjects.Sprite {
     }
 
     cannonShoot(time) {
-        if(this.SPACE.isDown && time > this.lastFired) {
+        if(this.SPACE.isDown && time > this.lastFired && this.ammunitonCount > 0) {
             const bullet = this.shoots.create(this.x, this.y, 'shoot');
+            if(bullet) {
+                this.play(this.name + 'shoot').once('animationcomplete', () => {
+                    this.play(this.name + 'fly');
+                });
+            }
             bullet.setVelocityX(+200);
+            this.ammunitonCount -= 1;
             this.lastFired = time + 200;
+            this.shootSound.play();
         }}
 
     movementVertical() {
@@ -75,6 +84,4 @@ export class Player extends Phaser.GameObjects.Sprite {
                 shoot.destroy();
             }
         }, this);
-    }
-
-}
+    }}
