@@ -8,6 +8,17 @@ export class Amazon extends Phaser.Scene {
     constructor() {
         super('amazon');
         this.player = null;
+        this.fuelConsu = 100;
+    }
+
+    addBackground() {
+        this.background = this.add.tileSprite(
+            400,
+            300,
+            800,
+            600,
+            'sky'
+          );
     }
 
     addPlayer(shootSound) {
@@ -38,6 +49,7 @@ export class Amazon extends Phaser.Scene {
     configSounds() {
         this.shootSound = this.sound.add('shootAudio');
         this.explosionSound = this.sound.add('explosionAudio');
+        this.warningSound = this.sound.add('warningAudio').setLoop(true);
     }
 
     enemyHit(shoot, enemy) {
@@ -51,23 +63,30 @@ export class Amazon extends Phaser.Scene {
         this.physics.add.collider(this.player.shoots, this.enemies, this.enemyHit, null, this);
     }
 
+    fuelConsumer() {
+        this.fuelConsu -=5;
+        this.events.emit('consumeFuel', 5);
+    }
+
+    createTimes() {
+        this.time.addEvent({ delay: 5000, callback: this.fuelConsumer, callbackScope: this, loop: true });
+    }
+
     create() {
-        this.background = this.add.tileSprite(
-            400,
-            300,
-            800,
-            600,
-            'sky'
-          );
+        this.addBackground();
         this.hud =  new HUD(this, 0, 0);
         this.configSounds();
         this.addPlayer(this.shootSound);
+        this.createTimes();
         // this.enemiesGroup();
         // this.physicsColliders();
     }
 
     update(time, delta) {
         if(this.player) this.player.update(time);
+        if(this.fuelConsu == 25) this.warningSound.play({volume: 0.5});
+        if(this.fuelConsu > 25) this.warningSound.stop();
+        if(this.fuelConsu == 0) console.log('gameover');
         // this.enemies.children.iterate(function (enemy) {
         //     enemy.update();
         // });

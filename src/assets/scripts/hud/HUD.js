@@ -1,35 +1,45 @@
 import Phaser from 'phaser';
+import { fontPatternHUD } from '../utils/fontPattern';
 
 export class HUD extends Phaser.GameObjects.Container {
     constructor(scene, x , y) {
         super(scene, x , y);
         scene.add.existing(this);
+        this.font = new FontFace('fontStandard', 'url(./assets/fonts/nasalization-rg.otf)');
+        this.addAmmoInfo();
+        this.addFuelInfo();
+        this.scene.events.on('playerShoot', this.updateAmmo, this);
+        this.scene.events.on('consumeFuel', this.updateConsumeFuel, this);
+    }
+
+    addAmmoInfo() {
         this.ammoIcon = this.scene.add.image(36, 20,'ammoIcon');
         this.add(this.ammoIcon);
-        this.font = new FontFace('fontStandard', 'url(./assets/fonts/nasalization-rg.otf)');
         this.font.load().then(function(loadedFont) {
             document.fonts.add(loadedFont);
-            this.ammotText = this.scene.add.text(22, 10, '25', {
-                fontFamily: 'fontStandard',
-                fontSize: 18,
-                color: '#00ff00',
-                stroke: '#00aa00',
-                strokeThickness: 1,
-                shadow: {
-                    offsetX: 0,
-                    offsetY: 0,
-                    color: '#00ff00',
-                    blur: 18,
-                    stroke: true,
-                    fill: true
-                }
-            } );
+            this.ammotText = this.scene.add.text(22, 10, '25', fontPatternHUD );
             this.add(this.ammotText);
         }.bind(this));
-        this.scene.events.on('playerShoot', this.updateAmmo, this);
+    }
+
+    addFuelInfo() {
+        this.fuelIcon = this.scene.add.image(720, 20, 'fuelIcon');
+        this.add(this.fuelIcon);
+        this.fuelBar = this.scene.add.image(this.fuelIcon.x -42, this.fuelIcon.y -1, 'fuelBar').setOrigin(0, 0.5);
+        this.originalFuelBarWidth = this.fuelBar.width;
+        this.currentFuel = 100;
     }
 
     updateAmmo(ammunitionCount) {
         this.ammotText.setText(ammunitionCount);
+    }
+
+    updateConsumeFuel(amount) {
+        this.currentFuel -= amount;
+        if (this.currentFuel < 0) {
+            this.currentFuel = 0;
+        }
+        const newWidth = (this.currentFuel / 100) * this.originalFuelBarWidth;
+        this.fuelBar.displayWidth = newWidth;
     }
 }

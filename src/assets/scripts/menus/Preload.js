@@ -31,6 +31,7 @@ export class Preload extends Phaser.Scene {
         progressBar.destroy();
         progressBox.destroy();
         loadingText.destroy();
+        
       });
 
       this.loadingSprites();
@@ -58,12 +59,15 @@ export class Preload extends Phaser.Scene {
     loadingAudios() {
       this.load.audio('shootAudio', './assets/audio/shoot.WAV');
       this.load.audio('explosionAudio', './assets/audio/explosion.wav');
+      this.load.audio('warningAudio', './assets/audio/warning.wav');
     }
 
     loadingImages() {
       this.load.image('shoot', './assets/images/sprites/shoot.png');
       this.load.image('sky', './assets/images/background/skyBackground.png');
       this.load.image('ammoIcon', './assets/images/hud/ammoIcon.png');
+      this.load.image('fuelIcon', './assets/images/hud/fuelIcon.png');
+      this.load.image('fuelBar', './assets/images/hud/fuelBar.png');
     }
 
 
