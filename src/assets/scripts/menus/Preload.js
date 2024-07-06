@@ -60,6 +60,7 @@ export class Preload extends Phaser.Scene {
       this.load.audio('shootAudio', './assets/audio/shoot.WAV');
       this.load.audio('explosionAudio', './assets/audio/explosion.wav');
       this.load.audio('warningAudio', './assets/audio/warning.wav');
+      this.load.audio('menuAudio', './assets/audio/menu.wav');
     }
 
     loadingImages() {
@@ -68,8 +69,8 @@ export class Preload extends Phaser.Scene {
       this.load.image('ammoIcon', './assets/images/hud/ammoIcon.png');
       this.load.image('fuelIcon', './assets/images/hud/fuelIcon.png');
       this.load.image('fuelBar', './assets/images/hud/fuelBar.png');
+      this.load.image('profile', './assets/images/hud/profile.png');
     }
-
 
     enemyAnimation() {
       this.anims.create({
@@ -93,6 +94,6 @@ export class Preload extends Phaser.Scene {
       this.enemyAnimation();
       this.explosionAnimation();
       this.scene.stop('preload');
-      this.scene.start('amazon');
+      this.scene.start('devscreen');
     }
 }
