@@ -6,12 +6,12 @@ export class KC extends Phaser.GameObjects.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this);
     scene.sound.play('airplaneAudio', { volume: 0.2, seek: 4 });
+    this.body.setVelocityX(180);
   }
 
   update() {
-    this.body.setVelocityX(180);
     if (this.x > 900) {
-      this.scene.events.emit('airSupportFuel');
+      this.scene.events.emit('airFuelSupport');
       this.destroy();
     }
   }

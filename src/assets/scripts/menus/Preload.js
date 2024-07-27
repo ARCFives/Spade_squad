@@ -61,9 +61,11 @@ export class Preload extends Phaser.Scene {
     this.load.audio('shootAudio', './assets/audio/shoot.WAV');
     this.load.audio('explosionAudio', './assets/audio/explosion.wav');
     this.load.audio('warningAudio', './assets/audio/warning.wav');
+    this.load.audio('engineAudio', './assets/audio/engine.wav');
     this.load.audio('menuAudio', './assets/audio/menu.wav');
     this.load.audio('airplaneAudio', './assets/audio/airplanePass.wav');
     this.load.audio('pickupAudio', './assets/audio/pickup.wav');
+    this.load.audio('mainMenuMusic', './assets/audio/mainmenu.ogg');
   }
 
   loadingImages() {
@@ -73,6 +75,10 @@ export class Preload extends Phaser.Scene {
     this.load.image('fuelIcon', './assets/images/hud/fuelIcon.png');
     this.load.image('fuelBar', './assets/images/hud/fuelBar.png');
     this.load.image('profile', './assets/images/hud/profile.png');
+    this.load.image('soundStop', './assets/images/hud/speakerMute.png');
+    this.load.image('soundPlay', './assets/images/hud/speakerOn.png');
+    this.load.image('exitIcon', './assets/images/hud/exit.png');
+    this.load.image('fullIcon', './assets/images/hud/fullButton.png');
     this.load.image('kc', './assets/images/sprites/kc.png');
     this.load.image('gallon', './assets/images/sprites/gallon.png');
   }
@@ -100,9 +106,24 @@ export class Preload extends Phaser.Scene {
     });
   }
 
+  playerAnimations() {
+    this.anims.create({
+      key: 'playerFly',
+      frames: this.anims.generateFrameNumbers('player', { frames: [0, 1] }),
+      frameRate: 10,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'playerShoot',
+      frames: this.anims.generateFrameNumbers('player', { frames: [2, 3, 4] }),
+      frameRate: 60,
+    });
+  }
+
   create() {
     this.enemyAnimation();
     this.explosionAnimation();
+    this.playerAnimations();
     this.scene.stop('preload');
     this.scene.start('devscreen');
   }

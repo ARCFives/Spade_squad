@@ -1,6 +1,5 @@
 import Phaser from 'phaser';
 import { fontPatternHUD } from '../utils/fontPattern';
-
 export class HUD extends Phaser.GameObjects.Container {
   constructor(scene, x, y) {
     super(scene, x, y);
@@ -22,8 +21,7 @@ export class HUD extends Phaser.GameObjects.Container {
     this.font.load().then(
       function (loadedFont) {
         document.fonts.add(loadedFont);
-        this.ammotText = this.scene.add.text(22, 10, '25', fontPatternHUD);
-        this.add(this.ammotText);
+        this.ammoText = this.scene.add.text(22, 10, '25', fontPatternHUD);
       }.bind(this)
     );
   }
@@ -39,7 +37,10 @@ export class HUD extends Phaser.GameObjects.Container {
   }
 
   updateAmmo(ammunitionCount) {
-    this.ammotText.setText(ammunitionCount);
+    if (this.ammoText && this.ammoText.active) {
+      this.ammoText.setText(ammunitionCount);
+    } else {
+    }
   }
 
   updateConsumeFuel(amount) {

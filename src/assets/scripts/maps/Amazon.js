@@ -9,8 +9,7 @@ export class Amazon extends Phaser.Scene {
   // ############## Enemy disabled, for tests ############
   constructor() {
     super('amazon');
-    this.player = null;
-    this.fuelConsu = 100;
+    this.fuelConsumption = 100;
   }
 
   addBackground() {
@@ -19,7 +18,11 @@ export class Amazon extends Phaser.Scene {
 
   addPlayer(shootSound) {
     this.trailLayer = this.add.layer();
-    this.players = this.add.group();
+    this.players = this.add.group({
+      classType: Player,
+      runChildUpdate: true,
+      maxSize: 1,
+    });
     this.player = new Player(this, 40, 300, 'player', 150, shootSound);
     this.players.add(this.player);
   }
@@ -59,9 +62,14 @@ export class Amazon extends Phaser.Scene {
     this.shootSound = this.sound.add('shootAudio');
     this.explosionSound = this.sound.add('explosionAudio');
     this.warningSound = this.sound.add('warningAudio').setLoop(true);
+    this.engineSound = this.sound
+      .add('engineAudio')
+      .setLoop(true)
+      .setVolume(0.5);
   }
 
   objectHit(shoot, object) {
+    if (!shoot || !object) return;
     this.add.sprite(object.x, object.y).play('explosion');
     this.explosionSound.play();
     shoot.destroy();
@@ -93,7 +101,7 @@ export class Amazon extends Phaser.Scene {
   }
 
   fuelConsumer() {
-    this.fuelConsu -= 5;
+    this.fuelConsumption -= 5;
     this.events.emit('consumeFuel', 5);
   }
 
@@ -113,40 +121,46 @@ export class Amazon extends Phaser.Scene {
   }
 
   spawnAirRefuel() {
-    this.supportPlanes.add(new KC(this));
+    const kcPlane = new KC(this);
+    this.supportPlanes.add(kcPlane);
   }
 
   spawnFuelGallon() {
-    this.fuelGallons.add(new FuelGallon(this));
+    const fuelGallon = new FuelGallon(this);
+    this.fuelGallons.add(fuelGallon);
   }
 
   pickUpGallon(player, fuelGallon) {
-    if (player.active === true || fuelGallon == true) {
+    if (player.active === true && fuelGallon.active == true) {
       this.sound.play('pickupAudio');
       this.events.emit('refillBar');
-      this.fuelConsu = 100;
+      this.fuelConsumption = 100;
       fuelGallon.destroy();
     }
   }
 
+  createHUD() {
+    this.hud = new HUD(this, 0, 0);
+  }
+
   create() {
     this.addBackground();
-    this.hud = new HUD(this, 0, 0);
+    this.createHUD();
     this.configSounds();
     this.createGroups();
     this.addPlayer(this.shootSound);
+    this.engineSound.play();
     this.physicsColliders();
     this.createTimes();
-    this.events.on('airSupportFuel', this.spawnFuelGallon, this);
+    this.events.off('airFuelSupport', this.spawnFuelGallon, this); // remove event duplicate
+    this.events.on('airFuelSupport', this.spawnFuelGallon, this);
     // this.enemiesGroup();
-    // this.physicsColliders();
   }
 
   update(time, delta) {
-    if (this.player) this.player.update(time);
-    if (this.fuelConsu == 25) this.warningSound.play({ volume: 0.5 });
-    if (this.fuelConsu > 25) this.warningSound.stop();
-    if (this.fuelConsu == 0) console.log('gameover');
+    if (this.fuelConsumption == 25) this.warningSound.play({ volume: 0.5 });
+    if (this.fuelConsumption > 25) this.warningSound.stop();
+    if (this.fuelConsumption == 0) console.log('gameover');
     // this.enemies.children.iterate(function (enemy) {
     //     enemy.update();
     // });

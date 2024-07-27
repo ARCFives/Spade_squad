@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-
 export class Player extends Phaser.GameObjects.Sprite {
   constructor(scene, x, y, name, speed, shootSound) {
     super(scene, x, y, name);
@@ -8,7 +7,7 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.name = name;
     this.speed = speed;
     this.lastFired = 0;
-    this.ammunitonCount = 25;
+    this.ammunitionCount = 25;
     this.shootSound = shootSound;
     this.setOrigin(1, 0.5);
     this.body.setCollideWorldBounds(true);
@@ -26,36 +25,32 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.SPACE = this.scene.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.SPACE
     );
+    this.BACKSPACE = this.scene.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.BACKSPACE
+    );
   }
 
   init() {
-    this.anims.create({
-      key: this.name + 'fly',
-      frames: this.anims.generateFrameNumbers('player', { frames: [0, 1] }),
-      frameRate: 10,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: this.name + 'shoot',
-      frames: this.anims.generateFrameNumbers('player', { frames: [2, 3, 4] }),
-      frameRate: 60,
-    });
-    this.anims.play(this.name + 'fly');
+    this.anims.play('playerFly');
   }
 
   cannonShoot(time) {
-    if (this.SPACE.isDown && time > this.lastFired && this.ammunitonCount > 0) {
+    if (
+      this.SPACE.isDown &&
+      time > this.lastFired &&
+      this.ammunitionCount > 0
+    ) {
       const bullet = this.shoots.create(this.x, this.y, 'shoot');
       if (bullet) {
-        this.play(this.name + 'shoot').once('animationcomplete', () => {
-          this.play(this.name + 'fly');
+        this.play('playerShoot').once('animationcomplete', () => {
+          this.play('playerFly');
         });
       }
       bullet.setVelocityX(+200);
-      this.ammunitonCount -= 1;
+      this.ammunitionCount -= 1;
       this.lastFired = time + 200;
       this.shootSound.play();
-      this.scene.events.emit('playerShoot', this.ammunitonCount);
+      this.scene.events.emit('playerShoot', this.ammunitionCount);
     }
   }
 
@@ -79,14 +74,27 @@ export class Player extends Phaser.GameObjects.Sprite {
     }
   }
 
-  update(time) {
-    this.movementVertical();
-    this.movementHorizontal();
-    this.cannonShoot(time);
+  pauseGame() {
+    if (this.BACKSPACE.isDown) {
+      this.scene.input.stopPropagation();
+      this.scene.scene.pause();
+      this.scene.scene.launch('pausemenu');
+    }
+  }
+
+  removeBulletsScreen() {
     this.shoots.children.each(function (shoot) {
       if (shoot.x < 0 || shoot.x > this.scene.game.config.width) {
         shoot.destroy();
       }
     }, this);
+  }
+
+  update(time) {
+    this.movementVertical();
+    this.movementHorizontal();
+    this.cannonShoot(time);
+    this.pauseGame();
+    this.removeBulletsScreen();
   }
 }

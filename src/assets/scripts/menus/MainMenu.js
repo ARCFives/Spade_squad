@@ -8,43 +8,77 @@ export class MainMenu extends Phaser.Scene {
   }
 
   addStartButton() {
-    this.startButton = this.add
-      .text(320, 300, 'Iniciar', menuPatternText)
-      .setInteractive();
-    this.startButton.on('pointerover', () =>
-      this.startButton.setStyle(menuInterativeText)
+    this.buttonMenu('start', 320, 260, 'Iniciar', () =>
+      this.time.delayedCall(500, this.startGame, null, this)
     );
-    this.startButton.on('pointerout', () =>
-      this.startButton.setColor('#008800')
-    );
-    this.startButton.on('pointerup', () => {
-      this.sound.play('menuAudio');
-      this.time.delayedCall(500, this.startGame, null, this);
-    });
   }
 
   addControlsButton() {
-    this.controlsButton = this.add
-      .text(280, 360, 'Controles', menuPatternText)
+    this.buttonMenu('controls', 290, 380, 'Controles', () =>
+      console.log('controles')
+    );
+  }
+
+  addStoreButton() {
+    this.buttonMenu('store', 340, 320, 'Loja', () => console.log('loja'));
+  }
+
+  buttonMenu(buttonName, x, y, text, event) {
+    buttonName = this.add
+      .text(x, y, `${text}`, menuPatternText)
       .setInteractive();
-    this.controlsButton.on('pointerover', () =>
-      this.controlsButton.setStyle(menuInterativeText)
-    );
-    this.controlsButton.on('pointerout', () =>
-      this.controlsButton.setColor('#008800')
-    );
-    this.controlsButton.on('pointerup', () => {
-      this.sound.play('menuAudio');
-      console.log('controle menu');
+    buttonName.on('pointerover', () => buttonName.setStyle(menuInterativeText));
+    buttonName.on('pointerout', () => buttonName.setColor('#008800'));
+    buttonName.on('pointerup', () => {
+      this.playButtonClick();
+      event();
+    });
+  }
+
+  addCreditsButton() {
+    this.buttonMenu('credits', 300, 440, 'Créditos', () => {
+      this.input.stopPropagation();
+      this.music.stop();
+      this.scene.stop();
+      this.scene.start('credits');
     });
   }
 
   startGame() {
-    this.scene.stop('mainmenu');
+    this.input.stopPropagation();
+    this.music.stop();
     this.scene.start('amazon');
+    this.scene.stop('mainmenu');
   }
 
-  create() {
+  playButtonClick() {
+    this.sound.play('menuAudio');
+  }
+
+  addMusic() {
+    this.music = this.sound.add('mainMenuMusic', { loop: true, volume: 0.4 });
+    this.music.play();
+  }
+
+  soundToggleButton() {
+    this.musicFlag = true;
+    this.soundToggle = this.add
+      .image(700, 180, 'soundStop')
+      .setInteractive()
+      .setScale(2);
+    this.soundToggle.on('pointerup', () => {
+      if (this.musicFlag) {
+        this.soundToggle.setTexture('soundPlay');
+        this.music.stop();
+      } else {
+        this.soundToggle.setTexture('soundStop');
+        this.music.play();
+      }
+      this.musicFlag = !this.musicFlag;
+    });
+  }
+
+  addFonts() {
     this.font = new FontFace(
       'fontStandard',
       'url(./assets/fonts/nasalization-rg.otf)'
@@ -53,20 +87,26 @@ export class MainMenu extends Phaser.Scene {
       'fontSpade',
       'url(./assets/fonts/TarrgetAcademyRegular.otf)'
     );
+  }
+
+  loadFontsMenuOptions() {
     this.spadeFont.load().then(
       function (loadFont) {
         document.fonts.add(loadFont);
-        this.add.text(20, 150, 'Spade Squad', {
+        this.add.text(20, 80, 'Spade Squad', {
           fontFamily: 'fontSpade',
           fontSize: 84,
           color: '#eeeeee',
         });
+        this.soundToggleButton();
         this.font.load().then(
           function (loadedFont) {
             document.fonts.add(loadedFont);
             this.addStartButton();
+            this.addStoreButton();
             this.addControlsButton();
-            this.add.text(740, 580, `V ${gameConfig.version}`, {
+            this.addCreditsButton();
+            this.add.text(20, 580, `V ${gameConfig.version}`, {
               fontFamily: 'fontStandard',
               fontSize: 14,
               color: '#ddd',
@@ -75,5 +115,29 @@ export class MainMenu extends Phaser.Scene {
         );
       }.bind(this)
     );
+  }
+
+  addToggleFullScreenButton() {
+    this.fullScreenButton = this.add
+      .image(695, 550, 'fullIcon')
+      .setInteractive();
+    this.fullScreenButton.on(
+      'pointerup',
+      () => {
+        if (this.scale.isFullscreen) {
+          this.scale.stopFullscreen();
+        } else {
+          this.scale.startFullscreen();
+        }
+      },
+      this
+    );
+  }
+
+  create() {
+    this.addMusic();
+    this.addFonts();
+    this.addToggleFullScreenButton();
+    this.loadFontsMenuOptions();
   }
 }
