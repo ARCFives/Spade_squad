@@ -4,6 +4,7 @@ import { Enemy } from '../gameObjects/enemy/enemy';
 import { HUD } from '../hud/HUD';
 import { KC } from '../gameObjects/kc/KC';
 import { FuelGallon } from '../gameObjects/fuelgallon/FuelGallon';
+import { AmmoBox } from '../gameObjects/ammobox/AmmoBox';
 
 export class Amazon extends Phaser.Scene {
   // ############## Enemy disabled, for tests ############
@@ -35,6 +36,11 @@ export class Amazon extends Phaser.Scene {
     });
     this.fuelGallons = this.add.group({
       classType: FuelGallon,
+      runChildUpdate: true,
+      maxSize: 1,
+    });
+    this.ammoBoxs = this.add.group({
+      classType: AmmoBox,
       runChildUpdate: true,
       maxSize: 1,
     });
@@ -98,6 +104,20 @@ export class Amazon extends Phaser.Scene {
       null,
       this
     );
+    this.physics.add.collider(
+      this.player,
+      this.ammoBoxs,
+      this.pickUpAmmoBox,
+      null,
+      this
+    );
+    this.physics.add.collider(
+      this.player.shoots,
+      this.ammoBoxs,
+      this.objectHit,
+      null,
+      this
+    );
   }
 
   fuelConsumer() {
@@ -106,15 +126,25 @@ export class Amazon extends Phaser.Scene {
   }
 
   createTimes() {
+    const FUEL_CONSUMER_DELAY = 5000;
+    const AIR_REFUEL_DELAY = 25000;
+    const AMMO_RELOAD_DELAY = 8000;
+
     this.time.addEvent({
-      delay: 5000,
+      delay: FUEL_CONSUMER_DELAY,
       callback: this.fuelConsumer,
       callbackScope: this,
       loop: true,
     });
     this.time.addEvent({
-      delay: 25000,
+      delay: AIR_REFUEL_DELAY,
       callback: this.spawnAirRefuel,
+      callbackScope: this,
+      loop: true,
+    });
+    this.time.addEvent({
+      delay: AMMO_RELOAD_DELAY,
+      callback: this.spawnAmmoBox,
       callbackScope: this,
       loop: true,
     });
@@ -130,12 +160,26 @@ export class Amazon extends Phaser.Scene {
     this.fuelGallons.add(fuelGallon);
   }
 
+  spawnAmmoBox() {
+    const ammoBox = new AmmoBox(this);
+    this.ammoBoxs.add(ammoBox);
+  }
+
   pickUpGallon(player, fuelGallon) {
-    if (player.active === true && fuelGallon.active == true) {
+    if (player.active === true && fuelGallon.active === true) {
       this.sound.play('pickupAudio');
       this.events.emit('refillBar');
       this.fuelConsumption = 100;
       fuelGallon.destroy();
+    }
+  }
+
+  pickUpAmmoBox(player, ammoBox) {
+    if (player.active === true && ammoBox.active === true) {
+      this.sound.play('pickupAudio');
+      this.player.ammunitionCount += 25;
+      this.events.emit('playerReload', this.player.ammunitionCount);
+      ammoBox.destroy();
     }
   }
 

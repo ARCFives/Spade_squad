@@ -81,6 +81,7 @@ export class Preload extends Phaser.Scene {
     this.load.image('fullIcon', './assets/images/hud/fullButton.png');
     this.load.image('kc', './assets/images/sprites/kc.png');
     this.load.image('gallon', './assets/images/sprites/gallon.png');
+    this.load.image('ammoBox', './assets/images/sprites/ammoBox.png');
   }
 
   enemyAnimation() {

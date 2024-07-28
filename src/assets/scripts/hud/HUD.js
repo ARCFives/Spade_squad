@@ -13,6 +13,7 @@ export class HUD extends Phaser.GameObjects.Container {
     this.scene.events.on('playerShoot', this.updateAmmo, this);
     this.scene.events.on('consumeFuel', this.updateConsumeFuel, this);
     this.scene.events.on('refillBar', this.updateRefillFuelBar, this);
+    this.scene.events.on('playerReload', this.updateAmmo, this);
   }
 
   addAmmoInfo() {
@@ -35,6 +36,8 @@ export class HUD extends Phaser.GameObjects.Container {
     this.originalFuelBarWidth = this.fuelBar.width;
     this.currentFuel = 100;
   }
+
+  updateReload() {}
 
   updateAmmo(ammunitionCount) {
     if (this.ammoText && this.ammoText.active) {
