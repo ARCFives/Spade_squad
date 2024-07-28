@@ -5,9 +5,7 @@ import { HUD } from '../hud/HUD';
 import { KC } from '../gameObjects/kc/KC';
 import { FuelGallon } from '../gameObjects/fuelgallon/FuelGallon';
 import { AmmoBox } from '../gameObjects/ammobox/AmmoBox';
-
 export class Amazon extends Phaser.Scene {
-  // ############## Enemy disabled, for tests ############
   constructor() {
     super('amazon');
     this.fuelConsumption = 100;
@@ -44,24 +42,16 @@ export class Amazon extends Phaser.Scene {
       runChildUpdate: true,
       maxSize: 1,
     });
-  }
-
-  enemiesGroup() {
-    this.enemies = this.physics.add.group({
+    this.enemies = this.add.group({
       classType: Enemy,
       runChildUpdate: true,
       maxSize: 10,
     });
-    this.time.addEvent({
-      delay: 2000,
-      callback: this.spawnEnemy,
-      callbackScope: this,
-      loop: true,
-    });
   }
 
   spawnEnemy() {
-    this.enemies.add(new Enemy(this));
+    const enemy = new Enemy(this);
+    this.enemies.add(enemy);
   }
 
   configSounds() {
@@ -82,14 +72,23 @@ export class Amazon extends Phaser.Scene {
     object.destroy();
   }
 
+  enemyHit(shoot, enemy) {
+    if (!shoot || !enemy) return;
+    this.add.sprite(enemy.x, enemy.y).play('explosion');
+    this.explosionSound.play();
+    this.events.emit('enemyDestroy', 100);
+    shoot.destroy();
+    enemy.destroy();
+  }
+
   physicsColliders() {
-    // this.physics.add.collider(
-    //   this.player.shoots,
-    //   this.enemies,
-    //   this.enemyHit,
-    //   null,
-    //   this
-    // );
+    this.physics.add.collider(
+      this.player.shoots,
+      this.enemies,
+      this.enemyHit,
+      null,
+      this
+    );
     this.physics.add.collider(
       this.player,
       this.fuelGallons,
@@ -129,6 +128,7 @@ export class Amazon extends Phaser.Scene {
     const FUEL_CONSUMER_DELAY = 5000;
     const AIR_REFUEL_DELAY = 25000;
     const AMMO_RELOAD_DELAY = 8000;
+    const ENEMY_SPAWN_DELAY = 2000;
 
     this.time.addEvent({
       delay: FUEL_CONSUMER_DELAY,
@@ -145,6 +145,12 @@ export class Amazon extends Phaser.Scene {
     this.time.addEvent({
       delay: AMMO_RELOAD_DELAY,
       callback: this.spawnAmmoBox,
+      callbackScope: this,
+      loop: true,
+    });
+    this.time.addEvent({
+      delay: ENEMY_SPAWN_DELAY,
+      callback: this.spawnEnemy,
       callbackScope: this,
       loop: true,
     });
@@ -198,15 +204,11 @@ export class Amazon extends Phaser.Scene {
     this.createTimes();
     this.events.off('airFuelSupport', this.spawnFuelGallon, this); // remove event duplicate
     this.events.on('airFuelSupport', this.spawnFuelGallon, this);
-    // this.enemiesGroup();
   }
 
   update(time, delta) {
     if (this.fuelConsumption == 25) this.warningSound.play({ volume: 0.5 });
     if (this.fuelConsumption > 25) this.warningSound.stop();
     if (this.fuelConsumption == 0) console.log('gameover');
-    // this.enemies.children.iterate(function (enemy) {
-    //     enemy.update();
-    // });
   }
 }

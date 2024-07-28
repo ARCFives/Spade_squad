@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { fontPatternHUD } from '../utils/fontPattern';
+import { fontPatternHUD, scorePatternHUD } from '../utils/fontPattern';
 export class HUD extends Phaser.GameObjects.Container {
   constructor(scene, x, y) {
     super(scene, x, y);
@@ -8,21 +8,23 @@ export class HUD extends Phaser.GameObjects.Container {
       'fontStandard',
       'url(./assets/fonts/nasalization-rg.otf)'
     );
-    this.addAmmoInfo();
+    this.addAmmoAndScoreInfo();
     this.addFuelInfo();
     this.scene.events.on('playerShoot', this.updateAmmo, this);
     this.scene.events.on('consumeFuel', this.updateConsumeFuel, this);
     this.scene.events.on('refillBar', this.updateRefillFuelBar, this);
     this.scene.events.on('playerReload', this.updateAmmo, this);
+    this.scene.events.on('enemyDestroy', this.updateScore, this);
   }
 
-  addAmmoInfo() {
+  addAmmoAndScoreInfo() {
     this.ammoIcon = this.scene.add.image(36, 20, 'ammoIcon');
     this.add(this.ammoIcon);
     this.font.load().then(
       function (loadedFont) {
         document.fonts.add(loadedFont);
         this.ammoText = this.scene.add.text(22, 10, '25', fontPatternHUD);
+        this.score = this.scene.add.text(350, 10, '000000', scorePatternHUD);
       }.bind(this)
     );
   }
@@ -37,7 +39,22 @@ export class HUD extends Phaser.GameObjects.Container {
     this.currentFuel = 100;
   }
 
-  updateReload() {}
+  updateScore(score) {
+    if (this.score && this.score.active) {
+      const scoreValue = parseInt(this.score.text);
+      const scoreUpdate = scoreValue + score;
+      if (scoreValue < 1000) {
+        this.score.setText(`0000${scoreUpdate}`);
+      } else if (scoreValue >= 1000) {
+        this.score.setText(`000${scoreUpdate}`);
+      } else if (scoreValue >= 10000) {
+        this.score.setText(`00${scoreUpdate}`);
+      } else {
+        this.score.setText(`0${scoreUpdate}`);
+      }
+    } else {
+    }
+  }
 
   updateAmmo(ammunitionCount) {
     if (this.ammoText && this.ammoText.active) {

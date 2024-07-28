@@ -6,6 +6,13 @@ export const fontPatternHUD = {
   strokeThickness: 1,
 };
 
+export const scorePatternHUD = {
+  fontFamily: 'fontStandard',
+  fontSize: 18,
+  color: '#000',
+  textAlign: 'center',
+};
+
 export const menuPatternText = {
   fontFamily: 'fontStandard',
   fontSize: 36,
