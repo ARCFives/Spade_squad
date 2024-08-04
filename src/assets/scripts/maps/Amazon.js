@@ -42,6 +42,11 @@ export class Amazon extends Phaser.Scene {
       runChildUpdate: true,
       maxSize: 1,
     });
+    this.missileBoxs = this.add.group({
+      classType: AmmoBox,
+      runChildUpdate: true,
+      maxSize: 1,
+    });
     this.enemies = this.add.group({
       classType: Enemy,
       runChildUpdate: true,
@@ -117,6 +122,27 @@ export class Amazon extends Phaser.Scene {
       null,
       this
     );
+    this.physics.add.collider(
+      this.player.missiles,
+      this.enemies,
+      this.enemyHit,
+      null,
+      this
+    );
+    this.physics.add.collider(
+      this.player,
+      this.missileBoxs,
+      this.pickUpAmmoBox,
+      null,
+      this
+    );
+    this.physics.add.collider(
+      this.player.shoots,
+      this.missileBoxs,
+      this.objectHit,
+      null,
+      this
+    );
   }
 
   fuelConsumer() {
@@ -129,6 +155,7 @@ export class Amazon extends Phaser.Scene {
     const AIR_REFUEL_DELAY = 25000;
     const AMMO_RELOAD_DELAY = 8000;
     const ENEMY_SPAWN_DELAY = 2000;
+    const MISSILE_BOX_DELAY = 15000;
 
     this.time.addEvent({
       delay: FUEL_CONSUMER_DELAY,
@@ -145,6 +172,12 @@ export class Amazon extends Phaser.Scene {
     this.time.addEvent({
       delay: AMMO_RELOAD_DELAY,
       callback: this.spawnAmmoBox,
+      callbackScope: this,
+      loop: true,
+    });
+    this.time.addEvent({
+      delay: MISSILE_BOX_DELAY,
+      callback: this.spawnMissileBox,
       callbackScope: this,
       loop: true,
     });
@@ -167,8 +200,13 @@ export class Amazon extends Phaser.Scene {
   }
 
   spawnAmmoBox() {
-    const ammoBox = new AmmoBox(this);
+    const ammoBox = new AmmoBox(this, 'ammoBox');
     this.ammoBoxs.add(ammoBox);
+  }
+
+  spawnMissileBox() {
+    const MissileBox = new AmmoBox(this, 'missileBox');
+    this.missileBoxs.add(MissileBox);
   }
 
   pickUpGallon(player, fuelGallon) {
@@ -182,9 +220,20 @@ export class Amazon extends Phaser.Scene {
 
   pickUpAmmoBox(player, ammoBox) {
     if (player.active === true && ammoBox.active === true) {
+      if (ammoBox.texture.key === 'ammoBox') {
+        this.player.ammunitionCount += 25;
+        if (this.player.ammunitionCount > 150) {
+          this.player.ammunitionCount = 150;
+        }
+        this.events.emit('playerReload', this.player.ammunitionCount);
+      } else {
+        this.player.missileCount += 2;
+        if (this.player.missileCount > 5) {
+          this.player.missileCount = 5;
+        }
+        this.events.emit('playerReloadMissile', this.player.missileCount);
+      }
       this.sound.play('pickupAudio');
-      this.player.ammunitionCount += 25;
-      this.events.emit('playerReload', this.player.ammunitionCount);
       ammoBox.destroy();
     }
   }

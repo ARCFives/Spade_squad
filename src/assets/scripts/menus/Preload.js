@@ -55,6 +55,10 @@ export class Preload extends Phaser.Scene {
         frameHeight: 100,
       }
     );
+    this.load.spritesheet('missile', './assets/images/sprites/missile.png', {
+      frameWidth: 35,
+      frameHeight: 7,
+    });
   }
 
   loadingAudios() {
@@ -65,6 +69,8 @@ export class Preload extends Phaser.Scene {
     this.load.audio('menuAudio', './assets/audio/menu.wav');
     this.load.audio('airplaneAudio', './assets/audio/airplanePass.wav');
     this.load.audio('pickupAudio', './assets/audio/pickup.wav');
+    this.load.audio('missileAudio', './assets/audio/missile.wav');
+    this.load.audio('emptyAudio', './assets/audio/tick.wav');
     this.load.audio('mainMenuMusic', './assets/audio/mainmenu.ogg');
   }
 
@@ -79,9 +85,11 @@ export class Preload extends Phaser.Scene {
     this.load.image('soundPlay', './assets/images/hud/speakerOn.png');
     this.load.image('exitIcon', './assets/images/hud/exit.png');
     this.load.image('fullIcon', './assets/images/hud/fullButton.png');
+    this.load.image('missileIcon', './assets/images/hud/missile_icon.png');
     this.load.image('kc', './assets/images/sprites/kc.png');
     this.load.image('gallon', './assets/images/sprites/gallon.png');
     this.load.image('ammoBox', './assets/images/sprites/ammoBox.png');
+    this.load.image('missileBox', './assets/images/sprites/missileBox.png');
   }
 
   enemyAnimation() {
@@ -121,9 +129,19 @@ export class Preload extends Phaser.Scene {
     });
   }
 
+  missileAnimations() {
+    this.anims.create({
+      key: 'missileFire',
+      frames: this.anims.generateFrameNames('missile', { frames: [0, 1] }),
+      frameRate: 10,
+      repeat: -1,
+    });
+  }
+
   create() {
     this.enemyAnimation();
     this.explosionAnimation();
+    this.missileAnimations();
     this.playerAnimations();
     this.scene.stop('preload');
     this.scene.start('devscreen');
