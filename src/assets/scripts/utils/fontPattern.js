@@ -21,7 +21,24 @@ export const menuPatternText = {
   strokeThickness: 1,
 };
 
+export const highscoreText = {
+  fontFamily: 'fontStandard',
+  fontSize: 24,
+};
+
+export const scoreTextMenu = {
+  fontFamily: 'fontStandard',
+  fontSize: 18,
+  textAlign: 'center',
+};
+
 export const menuInterativeText = {
   color: '#00ff00',
   stroke: '#00aa00',
+};
+
+export const gameoverText = {
+  fontFamily: 'fontStandard',
+  fontSize: 32,
+  textAlign: 'center',
 };

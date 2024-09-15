@@ -28,11 +28,11 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.SPACE = this.scene.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.SPACE
     );
-    this.BACKSPACE = this.scene.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.BACKSPACE
+    this.ESC = this.scene.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.ESC
     );
-    this.CTRL = this.scene.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.CTRL
+    this.SHIFT = this.scene.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.SHIFT
     );
   }
 
@@ -68,7 +68,7 @@ export class Player extends Phaser.GameObjects.Sprite {
   }
 
   missileShoot(time) {
-    if (this.CTRL.isDown && time > this.lastFired && this.missileCount > 0) {
+    if (this.SHIFT.isDown && time > this.lastFired && this.missileCount > 0) {
       const nearestEnemy = this.findEnemy();
       if (nearestEnemy) {
         const missile = this.missiles
@@ -81,7 +81,7 @@ export class Player extends Phaser.GameObjects.Sprite {
         this.scene.events.emit('playerMissile', this.missileCount);
       }
     }
-    if (this.CTRL.isDown && time > this.lastFired && this.missileCount == 0) {
+    if (this.SHIFT.isDown && time > this.lastFired && this.missileCount == 0) {
       this.scene.sound.play('emptyAudio');
     }
   }
@@ -142,7 +142,7 @@ export class Player extends Phaser.GameObjects.Sprite {
   }
 
   pauseGame() {
-    if (this.BACKSPACE.isDown) {
+    if (this.ESC.isDown) {
       this.scene.input.stopPropagation();
       this.scene.scene.pause();
       this.scene.scene.launch('pausemenu');

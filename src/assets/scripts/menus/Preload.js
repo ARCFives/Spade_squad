@@ -59,6 +59,14 @@ export class Preload extends Phaser.Scene {
       frameWidth: 35,
       frameHeight: 7,
     });
+    this.load.spritesheet('controls', './assets/images/sprites/controls.png', {
+      frameWidth: 32,
+      frameHeight: 32,
+    });
+    this.load.spritesheet('space', './assets/images/sprites/space.png', {
+      frameWidth: 64,
+      frameHeight: 32,
+    });
   }
 
   loadingAudios() {
@@ -138,11 +146,81 @@ export class Preload extends Phaser.Scene {
     });
   }
 
+  controlsAnimations() {
+    this.anims.create({
+      key: 'control_W',
+      frames: this.anims.generateFrameNames('controls', { frames: [0, 1] }),
+      frameRate: 3,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'control_UP',
+      frames: this.anims.generateFrameNames('controls', { frames: [10, 11] }),
+      frameRate: 3,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'control_S',
+      frames: this.anims.generateFrameNames('controls', { frames: [2, 3] }),
+      frameRate: 3,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'control_DOWN',
+      frames: this.anims.generateFrameNames('controls', { frames: [12, 13] }),
+      frameRate: 3,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'control_A',
+      frames: this.anims.generateFrameNames('controls', { frames: [4, 5] }),
+      frameRate: 3,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'control_LEFT',
+      frames: this.anims.generateFrameNames('controls', { frames: [14, 15] }),
+      frameRate: 3,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'control_D',
+      frames: this.anims.generateFrameNames('controls', { frames: [6, 7] }),
+      frameRate: 3,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'control_RIGHT',
+      frames: this.anims.generateFrameNames('controls', { frames: [16, 17] }),
+      frameRate: 3,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'control_PAUSE',
+      frames: this.anims.generateFrameNames('controls', { frames: [8, 9] }),
+      frameRate: 3,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'control_MISSILE',
+      frames: this.anims.generateFrameNames('controls', { frames: [18, 19] }),
+      frameRate: 3,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'control_FIRE',
+      frames: this.anims.generateFrameNames('space', { frames: [0, 1] }),
+      frameRate: 3,
+      repeat: -1,
+    });
+  }
+
   create() {
     this.enemyAnimation();
     this.explosionAnimation();
     this.missileAnimations();
     this.playerAnimations();
+    this.controlsAnimations();
     this.scene.stop('preload');
     this.scene.start('devscreen');
   }

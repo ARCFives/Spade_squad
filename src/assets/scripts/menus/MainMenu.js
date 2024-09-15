@@ -1,5 +1,10 @@
 import Phaser from 'phaser';
-import { menuInterativeText, menuPatternText } from '../utils/fontPattern';
+import {
+  highscoreText,
+  menuInterativeText,
+  menuPatternText,
+  scoreTextMenu,
+} from '../utils/fontPattern';
 import { gameConfig } from '../config/gameConfig';
 
 export class MainMenu extends Phaser.Scene {
@@ -13,10 +18,25 @@ export class MainMenu extends Phaser.Scene {
     );
   }
 
-  addControlsButton() {
-    this.buttonMenu('controls', 290, 380, 'Controles', () =>
-      console.log('controles')
+  addHighscore() {
+    this.add.text(650, 260, 'Highscore', highscoreText);
+    this.add.text(
+      670,
+      290,
+      `${
+        localStorage.spadeScore ? localStorage.getItem('spadeScore') : '0000000'
+      }`,
+      scoreTextMenu
     );
+  }
+
+  addControlsButton() {
+    this.buttonMenu('controls', 290, 380, 'Controles', () => {
+      this.input.stopPropagation();
+      this.music.stop();
+      this.scene.stop();
+      this.scene.start('controls');
+    });
   }
 
   addStoreButton() {
@@ -106,6 +126,7 @@ export class MainMenu extends Phaser.Scene {
             this.addStoreButton();
             this.addControlsButton();
             this.addCreditsButton();
+            this.addHighscore();
             this.add.text(20, 580, `V ${gameConfig.version}`, {
               fontFamily: 'fontStandard',
               fontSize: 14,
@@ -117,27 +138,9 @@ export class MainMenu extends Phaser.Scene {
     );
   }
 
-  addToggleFullScreenButton() {
-    this.fullScreenButton = this.add
-      .image(695, 550, 'fullIcon')
-      .setInteractive();
-    this.fullScreenButton.on(
-      'pointerup',
-      () => {
-        if (this.scale.isFullscreen) {
-          this.scale.stopFullscreen();
-        } else {
-          this.scale.startFullscreen();
-        }
-      },
-      this
-    );
-  }
-
   create() {
     this.addMusic();
     this.addFonts();
-    this.addToggleFullScreenButton();
     this.loadFontsMenuOptions();
   }
 }

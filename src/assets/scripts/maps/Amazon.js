@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { Player } from '../gameObjects/player/Player';
-import { Enemy } from '../gameObjects/enemy/enemy';
+import { Enemy } from '../gameObjects/enemy/Enemy';
 import { HUD } from '../hud/HUD';
 import { KC } from '../gameObjects/kc/KC';
 import { FuelGallon } from '../gameObjects/fuelgallon/FuelGallon';
@@ -143,6 +143,13 @@ export class Amazon extends Phaser.Scene {
       null,
       this
     );
+    this.physics.add.collider(
+      this.players,
+      this.enemies,
+      this.gameover,
+      null,
+      this
+    );
   }
 
   fuelConsumer() {
@@ -242,6 +249,29 @@ export class Amazon extends Phaser.Scene {
     this.hud = new HUD(this, 0, 0);
   }
 
+  gameover() {
+    const score = parseInt(this.hud.score.text);
+    this.saveHighScore(score);
+    this.input.stopPropagation();
+    this.engineSound.stop();
+    this.warningSound.stop();
+    this.scene.stop(this);
+    this.scene.start('gameover');
+  }
+
+  saveHighScore(score) {
+    console.log(`recebi o score ${score}`);
+    const hasSavedGame = localStorage.getItem('spadeScore');
+    console.log(typeof hasSavedGame);
+    console.log('peguei o save');
+    if (hasSavedGame === null || undefined) {
+      if (score <= 0) return;
+      localStorage.setItem('spadeScore', score);
+    } else if (parseInt(hasSavedGame) < score) {
+      localStorage.setItem('spadeScore', score);
+    }
+  }
+
   create() {
     this.addBackground();
     this.createHUD();
@@ -253,11 +283,13 @@ export class Amazon extends Phaser.Scene {
     this.createTimes();
     this.events.off('airFuelSupport', this.spawnFuelGallon, this); // remove event duplicate
     this.events.on('airFuelSupport', this.spawnFuelGallon, this);
+    this.events.off('enemyPass', this.gameover, this); // remove event duplicate
+    this.events.on('enemyPass', this.gameover, this);
   }
 
   update(time, delta) {
     if (this.fuelConsumption == 25) this.warningSound.play({ volume: 0.5 });
     if (this.fuelConsumption > 25) this.warningSound.stop();
-    if (this.fuelConsumption == 0) console.log('gameover');
+    if (this.fuelConsumption == 0) this.gameover();
   }
 }
