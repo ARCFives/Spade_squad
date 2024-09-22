@@ -11,18 +11,49 @@ export class Amazon extends Phaser.Scene {
     this.fuelConsumption = 100;
   }
 
+  checkCannonUpgrade() {
+    if (this.upgradesPaid.mainGunI) return 50;
+    return 25;
+  }
+
+  checkMissileUpgrade() {
+    let MISSILE_INITIAL = 2;
+    if (this.upgradesPaid.missileI) MISSILE_INITIAL += 1;
+    if (this.upgradesPaid.missileII) MISSILE_INITIAL += 2;
+    return MISSILE_INITIAL;
+  }
+
+  checkEngineIUpgrade() {
+    if (this.upgradesPaid.engineLvI) return 2.5;
+    return 5;
+  }
+
+  checkSpeedUpgrade() {
+    if (this.upgradesPaid.engineLvII) return 180;
+    return 150;
+  }
+
+  checkAirfuellingUpgrade() {
+    if (this.upgradesPaid.airfuelling) return 1;
+    return 0;
+  }
+
   addBackground() {
-    this.background = this.add.tileSprite(400, 300, 800, 600, 'sky');
+    this.add.tileSprite(400, 300, 800, 600, 'sky');
+    this.mountains = this.add.tileSprite(400, 300, 800, 600, 'mountains');
+    this.forestBack = this.add.tileSprite(400, 300, 800, 600, 'forest_back');
+    this.forestFront = this.add.tileSprite(400, 300, 800, 600, 'forest_front');
   }
 
   addPlayer(shootSound) {
+    const PLAYER_SPEED = this.checkSpeedUpgrade();
     this.trailLayer = this.add.layer();
     this.players = this.add.group({
       classType: Player,
       runChildUpdate: true,
       maxSize: 1,
     });
-    this.player = new Player(this, 40, 300, 'player', 150, shootSound);
+    this.player = new Player(this, 40, 300, 'player', PLAYER_SPEED, shootSound);
     this.players.add(this.player);
   }
 
@@ -30,12 +61,12 @@ export class Amazon extends Phaser.Scene {
     this.supportPlanes = this.add.group({
       classType: KC,
       runChildUpdate: true,
-      maxSize: 1,
+      maxSize: 2,
     });
     this.fuelGallons = this.add.group({
       classType: FuelGallon,
       runChildUpdate: true,
-      maxSize: 1,
+      maxSize: 2,
     });
     this.ammoBoxs = this.add.group({
       classType: AmmoBox,
@@ -153,8 +184,9 @@ export class Amazon extends Phaser.Scene {
   }
 
   fuelConsumer() {
-    this.fuelConsumption -= 5;
-    this.events.emit('consumeFuel', 5);
+    const fuelUse = this.checkEngineIUpgrade();
+    this.fuelConsumption -= fuelUse;
+    this.events.emit('consumeFuel', fuelUse);
   }
 
   createTimes() {
@@ -260,19 +292,19 @@ export class Amazon extends Phaser.Scene {
   }
 
   saveHighScore(score) {
-    console.log(`recebi o score ${score}`);
     const hasSavedGame = localStorage.getItem('spadeScore');
-    console.log(typeof hasSavedGame);
-    console.log('peguei o save');
+    const playerCash = localStorage.getItem('spadeCash');
     if (hasSavedGame === null || undefined) {
       if (score <= 0) return;
       localStorage.setItem('spadeScore', score);
     } else if (parseInt(hasSavedGame) < score) {
       localStorage.setItem('spadeScore', score);
     }
+    localStorage.setItem('spadeCash', score / 2 + parseInt(playerCash));
   }
 
   create() {
+    this.upgradesPaid = JSON.parse(localStorage.getItem('spadeUpgrades'));
     this.addBackground();
     this.createHUD();
     this.configSounds();
@@ -288,6 +320,9 @@ export class Amazon extends Phaser.Scene {
   }
 
   update(time, delta) {
+    this.forestFront.tilePositionX += 0.6;
+    this.forestBack.tilePositionX += 0.4;
+    this.mountains.tilePositionX += 0.1;
     if (this.fuelConsumption == 25) this.warningSound.play({ volume: 0.5 });
     if (this.fuelConsumption > 25) this.warningSound.stop();
     if (this.fuelConsumption == 0) this.gameover();

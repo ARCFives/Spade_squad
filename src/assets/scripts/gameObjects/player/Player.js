@@ -8,8 +8,9 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.name = name;
     this.speed = speed;
     this.lastFired = 0;
-    this.ammunitionCount = 25;
-    this.missileCount = 2;
+    this.hasAirfuelling = this.scene.checkAirfuellingUpgrade();
+    this.ammunitionCount = this.scene.checkCannonUpgrade();
+    this.missileCount = this.scene.checkMissileUpgrade();
     this.shootSound = shootSound;
     this.setOrigin(1, 0.5);
     this.body.setCollideWorldBounds(true);
@@ -25,6 +26,7 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.S = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
     this.D = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     this.A = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+    this.X = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X);
     this.SPACE = this.scene.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.SPACE
     );
@@ -83,6 +85,15 @@ export class Player extends Phaser.GameObjects.Sprite {
     }
     if (this.SHIFT.isDown && time > this.lastFired && this.missileCount == 0) {
       this.scene.sound.play('emptyAudio');
+    }
+  }
+
+  callAirfueling(time) {
+    if (this.X.isDown && time > this.lastFired) {
+      if (this.hasAirfuelling == 1) {
+        this.scene.spawnAirRefuel();
+        this.hasAirfuelling -= 1;
+      }
     }
   }
 
@@ -173,6 +184,7 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.cannonShoot(time);
     this.missileShoot(time);
     this.updateMissileDirection();
+    this.callAirfueling(time);
     this.pauseGame();
     this.removeBulletsScreen();
   }

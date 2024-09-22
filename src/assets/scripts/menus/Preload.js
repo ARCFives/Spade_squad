@@ -67,6 +67,10 @@ export class Preload extends Phaser.Scene {
       frameWidth: 64,
       frameHeight: 32,
     });
+    this.load.spritesheet('cards', './assets/images/cards/cards.png', {
+      frameWidth: 64,
+      frameHeight: 96,
+    });
   }
 
   loadingAudios() {
@@ -80,11 +84,25 @@ export class Preload extends Phaser.Scene {
     this.load.audio('missileAudio', './assets/audio/missile.wav');
     this.load.audio('emptyAudio', './assets/audio/tick.wav');
     this.load.audio('mainMenuMusic', './assets/audio/mainmenu.ogg');
+    this.load.audio('coinSound', './assets/audio/coin.ogg');
   }
 
   loadingImages() {
     this.load.image('shoot', './assets/images/sprites/shoot.png');
-    this.load.image('sky', './assets/images/background/skyBackground.png');
+    this.load.image('sky', './assets/images/background/map.png');
+    this.load.image(
+      'storeBackground',
+      './assets/images/background/store_background.png'
+    );
+    this.load.image(
+      'forest_front',
+      './assets/images/background/forest_front.png'
+    );
+    this.load.image(
+      'forest_back',
+      './assets/images/background/forest_back.png'
+    );
+    this.load.image('mountains', './assets/images/background/mountains.png');
     this.load.image('ammoIcon', './assets/images/hud/ammoIcon.png');
     this.load.image('fuelIcon', './assets/images/hud/fuelIcon.png');
     this.load.image('fuelBar', './assets/images/hud/fuelBar.png');

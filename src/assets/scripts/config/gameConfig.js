@@ -6,6 +6,7 @@ import { Gameover } from '../menus/Gameover';
 import { MainMenu } from '../menus/MainMenu';
 import { PauseMenu } from '../menus/PauseMenu';
 import { Preload } from '../menus/Preload';
+import { StoreMenu } from '../menus/StoreMenu';
 
 export const gameConfig = {
   type: Phaser.AUTO,
@@ -19,7 +20,7 @@ export const gameConfig = {
   physics: {
     default: 'arcade',
     arcade: {
-      debug: true,
+      debug: false,
     },
   },
   autoFocus: true,
@@ -32,5 +33,6 @@ export const gameConfig = {
     PauseMenu,
     Gameover,
     ControlsMenu,
+    StoreMenu,
   ],
 };

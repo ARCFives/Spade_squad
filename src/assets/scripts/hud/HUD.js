@@ -20,6 +20,8 @@ export class HUD extends Phaser.GameObjects.Container {
   }
 
   addAmmoAndScoreInfo() {
+    const PLAYER_INIT_AMMO = this.scene.checkCannonUpgrade();
+    const PLAYER_MISSILE_INITIAL = this.scene.checkMissileUpgrade();
     this.ammoIcon = this.scene.add.image(36, 20, 'ammoIcon');
     this.missileIcon = this.scene.add.image(140, 20, 'missileIcon');
     this.add(this.ammoIcon);
@@ -27,8 +29,18 @@ export class HUD extends Phaser.GameObjects.Container {
     this.font.load().then(
       function (loadedFont) {
         document.fonts.add(loadedFont);
-        this.ammoText = this.scene.add.text(22, 10, '25', fontPatternHUD);
-        this.missileText = this.scene.add.text(126, 10, '2', fontPatternHUD);
+        this.ammoText = this.scene.add.text(
+          22,
+          10,
+          `${PLAYER_INIT_AMMO}`,
+          fontPatternHUD
+        );
+        this.missileText = this.scene.add.text(
+          126,
+          10,
+          `${PLAYER_MISSILE_INITIAL}`,
+          fontPatternHUD
+        );
         this.score = this.scene.add.text(350, 10, '000000', scorePatternHUD);
       }.bind(this)
     );

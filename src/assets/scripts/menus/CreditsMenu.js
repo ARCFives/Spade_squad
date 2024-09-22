@@ -41,6 +41,7 @@ export class CreditsMenu extends Scene {
         this.credit(210, 'Main menu music: Abstraction');
         this.credit(240, 'Speaker and Exit icons: Crusenho');
         this.credit(270, 'Font Nasalization: Typodermic Fonts');
+        this.credit(300, 'Coin SFX: Casper Gaming');
       }.bind(this)
     );
   }

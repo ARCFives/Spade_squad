@@ -40,7 +40,12 @@ export class MainMenu extends Phaser.Scene {
   }
 
   addStoreButton() {
-    this.buttonMenu('store', 340, 320, 'Loja', () => console.log('loja'));
+    this.buttonMenu('store', 340, 320, 'Loja', () => {
+      this.input.stopPropagation();
+      this.music.stop();
+      this.scene.stop();
+      this.scene.start('store');
+    });
   }
 
   buttonMenu(buttonName, x, y, text, event) {
@@ -83,7 +88,7 @@ export class MainMenu extends Phaser.Scene {
   soundToggleButton() {
     this.musicFlag = true;
     this.soundToggle = this.add
-      .image(700, 180, 'soundStop')
+      .image(100, 180, 'soundStop')
       .setInteractive()
       .setScale(2);
     this.soundToggle.on('pointerup', () => {
@@ -127,7 +132,7 @@ export class MainMenu extends Phaser.Scene {
             this.addControlsButton();
             this.addCreditsButton();
             this.addHighscore();
-            this.add.text(20, 580, `V ${gameConfig.version}`, {
+            this.add.text(745, 580, `V ${gameConfig.version}`, {
               fontFamily: 'fontStandard',
               fontSize: 14,
               color: '#ddd',
