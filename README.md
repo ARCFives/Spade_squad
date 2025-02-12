@@ -51,7 +51,7 @@ Logo após será criado a pasta `/dist` com os arquivos do game.
 
 ## :joystick: Teste online
 
-<div align="center"><h2><a href="https://66f0b8b282cdde4c7cf1ea96--spadesquad.netlify.app/" >Testar Game</a></h2></div>
+<div align="center"><h2><a href="https://spadesquad.netlify.app/" title="abir o game" target="_blank">Testar Game</a></h2></div>
 
 ## :bookmark_tabs: Licença
 
