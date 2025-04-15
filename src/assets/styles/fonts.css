@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'fontStandard';
+    src: url('../fonts/nasalization-rg.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'fontSpade';
+    src: url('../fonts/TarrgetAcademyRegular.otf') format('opentype');
+}
