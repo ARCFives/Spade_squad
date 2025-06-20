@@ -1,7 +1,6 @@
-import { GameObjects} from 'phaser';
+import { GameObjects } from 'phaser';
 import { BaseMenu } from './base/Base_Menu';
 import { BaseScene } from '../scenes/base/Base_Scene';
-import { language } from 'assets/utils/languages';
 import { IPauseGameText } from 'assets/interfaces/texts/IPauseGameText';
 
 export class PauseMenu extends BaseMenu {
@@ -13,11 +12,25 @@ export class PauseMenu extends BaseMenu {
     super('pausemenu');
   }
 
-  public addButtons(){
-    const getLanguage: IPauseGameText = this.checkLanguage() as IPauseGameText;
+  public addButtons() {
+    const getLanguage: IPauseGameText = this.checkLanguage(
+      'pausemenu'
+    ) as IPauseGameText;
 
-    this.addButtonMenu(this.resume, 300, 230, `${getLanguage.resume}`, this.callResumeScene.bind(this));
-    this.addButtonMenu(this.mainmenu, 250, 290, `${getLanguage.mainMenu}`, this.callMainMenu.bind(this));
+    this.addButtonMenu(
+      this.resume,
+      300,
+      230,
+      `${getLanguage.resume}`,
+      this.callResumeScene.bind(this)
+    );
+    this.addButtonMenu(
+      this.mainmenu,
+      250,
+      290,
+      `${getLanguage.mainMenu}`,
+      this.callMainMenu.bind(this)
+    );
   }
 
   private callResumeScene() {
@@ -35,12 +48,6 @@ export class PauseMenu extends BaseMenu {
     sceneGame.warningSound.stop();
     sceneGame.music.stop();
     this.scene.start('mainmenu');
-  }
-
-  protected checkLanguage() {
-      const getLanguage = localStorage.getItem('spade-language') as string;
-      if(getLanguage === 'portugues') return language.portugues.pauseGame;
-      if(getLanguage === 'english') return language.english.pauseGame;
   }
 
   create() {

@@ -9,5 +9,18 @@ import { CreditsMenu } from '../menus/CreditsMenu';
 import { Amazon } from '../scenes/Amazon';
 import { PauseMenu } from '../menus/PauseMenu';
 import { Gameover } from '../menus/Gameover';
+import { PlaneSelection } from '../menus/PlaneSelection';
 
-export const scenesGame: Types.Scenes.SceneType[] = [Preload, LanguageMenu, DevScreen, MainMenu, StoreMenu, ControlsMenu, CreditsMenu ,Amazon, PauseMenu,  Gameover];
+export const scenesGame: Types.Scenes.SceneType[] = [
+  Preload,
+  LanguageMenu,
+  DevScreen,
+  MainMenu,
+  PlaneSelection,
+  StoreMenu,
+  ControlsMenu,
+  CreditsMenu,
+  Amazon,
+  PauseMenu,
+  Gameover,
+];

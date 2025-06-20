@@ -38,24 +38,31 @@ export class Preload extends Phaser.Scene {
   }
 
   loadingSprites() {
-    this.load.setPath('./assets/images/sprites/'); 
-    this.load.spritesheet('player', 'a29.png', {
+    this.load.setPath('./assets/images/sprites/');
+    this.load.spritesheet('tucano', 'tucano.png', {
       frameWidth: 74,
       frameHeight: 20,
     });
-
+    this.load.spritesheet('amx', 'amx.png', {
+      frameWidth: 92,
+      frameHeight: 26,
+    });
+    this.load.spritesheet('gripen', 'gripen.png', {
+      frameWidth: 105,
+      frameHeight: 26,
+    });
+    this.load.spritesheet('aircrafts_menu', 'planes_selection.png', {
+      frameWidth: 148,
+      frameHeight: 148,
+    });
     this.load.spritesheet('enemy', 'cessna.png', {
       frameWidth: 80,
       frameHeight: 28,
     });
-    this.load.spritesheet(
-      'explosion',
-      'explosion.png',
-      {
-        frameWidth: 100,
-        frameHeight: 100,
-      }
-    );
+    this.load.spritesheet('explosion', 'explosion.png', {
+      frameWidth: 100,
+      frameHeight: 100,
+    });
     this.load.spritesheet('missile', 'missile.png', {
       frameWidth: 35,
       frameHeight: 7,
@@ -72,11 +79,25 @@ export class Preload extends Phaser.Scene {
       frameWidth: 64,
       frameHeight: 96,
     });
+    this.load.spritesheet('aircraft_info_bar', 'aircraft_info_bar.png', {
+      frameWidth: 32,
+      frameHeight: 8,
+    });
+    this.load.spritesheet('muzzle_flash', 'muzzle_flash_effect.png', {
+      frameWidth: 6,
+      frameHeight: 5,
+    });
+    this.load.spritesheet('arrow_next', 'arrow.png', {
+      frameWidth: 32,
+      frameHeight: 32,
+    });
     this.load.image('shoot', 'shoot.png');
     this.load.image('kc390', 'kc.png');
     this.load.image('gallon', 'gallon.png');
     this.load.image('ammoBox', 'ammoBox.png');
     this.load.image('missileBox', 'missileBox.png');
+    this.load.image('wing_missile', 'wing_missile.png');
+    this.load.image('aircraft_card', 'aircraft_card.png');
   }
 
   loadingAudios() {
@@ -84,7 +105,8 @@ export class Preload extends Phaser.Scene {
     this.load.audio('shootAudio', 'shoot.WAV');
     this.load.audio('explosionAudio', 'explosion.wav');
     this.load.audio('warningAudio', 'warning.wav');
-    this.load.audio('engineAudio', 'engine.wav');
+    this.load.audio('propeller_engine', 'propeller_engine.wav');
+    this.load.audio('jet_engine', 'jet_engine.wav');
     this.load.audio('menuAudio', 'menu.wav');
     this.load.audio('airplaneAudio', 'airplanePass.wav');
     this.load.audio('pickupAudio', 'pickup.wav');
@@ -98,9 +120,10 @@ export class Preload extends Phaser.Scene {
   loadingImages() {
     this.load.setPath('./assets/images/background/');
     this.load.image('sky', 'map.png');
-    this.load.image('storeBackground','store_background.png');
-    this.load.image('forest_front','forest_front.png');
-    this.load.image('forest_back','forest_back.png');
+    this.load.image('hangar', 'hangar.png');
+    this.load.image('storeBackground', 'store_background.png');
+    this.load.image('forest_front', 'forest_front.png');
+    this.load.image('forest_back', 'forest_back.png');
     this.load.image('mountains', 'mountains.png');
     this.load.setPath('./assets/images/hud/');
     this.load.image('ammoIcon', 'ammoIcon.png');
@@ -111,7 +134,7 @@ export class Preload extends Phaser.Scene {
     this.load.image('soundPlay', 'speakerOn.png');
     this.load.image('exitIcon', 'exit.png');
     this.load.image('fullIcon', 'fullButton.png');
-    this.load.image('missileIcon', 'missile_icon.png'); 
+    this.load.image('missileIcon', 'missile_icon.png');
   }
 
   enemyAnimation() {
@@ -135,19 +158,35 @@ export class Preload extends Phaser.Scene {
       frameRate: 30,
       hideOnComplete: true,
     });
+    this.anims.create({
+      key: 'muzzle_flash',
+      frames: this.anims.generateFrameNumbers('muzzle_flash', {
+        start: 0,
+        end: 1,
+      }),
+      frameRate: 30,
+      hideOnComplete: true,
+    });
   }
 
   playerAnimations() {
     this.anims.create({
-      key: 'playerFly',
-      frames: this.anims.generateFrameNumbers('player', { frames: [0, 1] }),
+      key: 'tucano_fly',
+      frames: this.anims.generateFrameNumbers('tucano', { frames: [0, 1] }),
       frameRate: 10,
       repeat: -1,
     });
     this.anims.create({
-      key: 'playerShoot',
-      frames: this.anims.generateFrameNumbers('player', { frames: [2, 3, 4] }),
-      frameRate: 60,
+      key: 'amx_fly',
+      frames: this.anims.generateFrameNumbers('amx', { start: 0, end: 3 }),
+      frameRate: 30,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'gripen_fly',
+      frames: this.anims.generateFrameNumbers('gripen', { start: 0, end: 3 }),
+      frameRate: 30,
+      repeat: -1,
     });
   }
 

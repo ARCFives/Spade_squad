@@ -1,36 +1,40 @@
+import { BaseScene } from 'assets/scripts/scenes/base/Base_Scene';
 import { scoreTextHUD, textHUD } from 'assets/utils/textsConfig';
-import { GameObjects, Scene } from 'phaser';
+import { GameObjects} from 'phaser';
 
 export class HUD extends GameObjects.Container {
-    private ammoCountText!: GameObjects.Text;
-    private missileCountText!: GameObjects.Text;
-    public scoreText!: GameObjects.Text;
-    private fuelBar!: GameObjects.Image;
-    private originalFuelBarWidth!: number;
-    private currentFuel!: number;
+  declare scene: BaseScene;
+  private ammoCountText!: GameObjects.Text;
+  private missileCountText!: GameObjects.Text;
+  public scoreText!: GameObjects.Text;
+  private fuelBar!: GameObjects.Image;
+  private originalFuelBarWidth!: number;
+  private currentFuel!: number;
 
-    constructor (scene: Scene, x: number, y: number) {
-        super(scene, x, y);
-        scene.add.existing(this);  
-        this.addGunsAndScoreInfo();     
-        this.addFuelInfo();
-        this.scene.events.on('playerMainGun', this.updateAmmoCountScreen, this);
-        this.scene.events.on('playerFireMissile', this.updateMissile, this);
-        this.scene.events.on('playerMainGunReload', this.updateAmmoCountScreen, this);
-        this.scene.events.on('playerMissileReload', this.updateMissile, this);
-        this.scene.events.on('playerFlyFuelConsume', this.updateBarFuelConsume, this);
-        this.scene.events.on('playerPickUpFuelGallon', this.updateBarFuelRefill, this);
-        this.scene.events.on('enemyDestroy', this.updateScore, this);
-    }
+  constructor (scene: BaseScene, x: number, y: number) {
+    super(scene, x, y);
+    scene.add.existing(this);  
+    this.addGunsAndScoreInfo();     
+    this.addFuelInfo();
+    this.scene.events.on('playerMainGun', this.updateAmmoCountScreen, this);
+    this.scene.events.on('playerFireMissile', this.updateMissile, this);
+    this.scene.events.on('playerMainGunReload', this.updateAmmoCountScreen, this);
+    this.scene.events.on('playerMissileReload', this.updateMissile, this);
+    this.scene.events.on('playerFlyFuelConsume', this.updateBarFuelConsume, this);
+    this.scene.events.on('playerPickUpFuelGallon', this.updateBarFuelRefill, this);
+    this.scene.events.on('enemyDestroy', this.updateScore, this);
+  }
 
     private addGunsAndScoreInfo() {
-        this.scene.add.image(36, 20, 'ammoIcon');
-        this.scene.add.image(140, 20, 'missileIcon');
-        document.fonts.load('18px fontStandard').then(() => {
-            this.ammoCountText = this.scene.add.text(22, 10, '25', textHUD);
-            this.missileCountText = this.scene.add.text(126, 10, '2', textHUD);
-            this.scoreText = this.scene.add.text(350, 10, '000000', scoreTextHUD);
-        });
+      const INITIAL_AMMO_PLAYER = this.scene.checkMainGunUpgrade();
+      
+      this.scene.add.image(36, 20, 'ammoIcon');
+      this.scene.add.image(140, 20, 'missileIcon');
+      document.fonts.load('18px fontStandard').then(() => {
+        this.ammoCountText = this.scene.add.text(22, 10, INITIAL_AMMO_PLAYER.toString(), textHUD);
+        this.missileCountText = this.scene.add.text(126, 10, '2', textHUD);
+        this.scoreText = this.scene.add.text(350, 10, '000000', scoreTextHUD);
+      });
     }
 
     private addFuelInfo() {
