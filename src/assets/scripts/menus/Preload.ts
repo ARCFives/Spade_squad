@@ -51,6 +51,10 @@ export class Preload extends Phaser.Scene {
       frameWidth: 105,
       frameHeight: 26,
     });
+    this.load.spritesheet('languages', 'languages.png', {
+      frameWidth: 21,
+      frameHeight: 12,
+    });
     this.load.spritesheet('aircrafts_menu', 'planes_selection.png', {
       frameWidth: 148,
       frameHeight: 148,

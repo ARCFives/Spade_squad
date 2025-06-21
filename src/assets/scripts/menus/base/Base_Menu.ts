@@ -49,18 +49,23 @@ export abstract class BaseMenu extends Scene {
     if (type === 'controls') {
       if (getLanguage === 'portugues') return language.portugues.controls;
       if (getLanguage === 'english') return language.english.controls;
+      if (getLanguage === 'spanish') return language.spanish.controls;
     } else if (type === 'mainmenu') {
       if (getLanguage === 'portugues') return language.portugues.mainmenu;
       if (getLanguage === 'english') return language.english.mainmenu;
+      if (getLanguage === 'spanish') return language.spanish.mainmenu;
     } else if (type === 'pausemenu') {
       if (getLanguage === 'portugues') return language.portugues.pauseGame;
       if (getLanguage === 'english') return language.english.pauseGame;
+      if (getLanguage === 'spanish') return language.spanish.pauseGame;
     } else if (type === 'storemenu') {
       if (getLanguage === 'portugues') return language.portugues.store;
       if (getLanguage === 'english') return language.english.store;
+      if (getLanguage === 'spanish') return language.spanish.store;
     } else if (type === 'selectionmenu') {
       if (getLanguage === 'portugues') return language.portugues.selection_menu;
       if (getLanguage === 'english') return language.english.selection_menu;
+      if (getLanguage === 'spanish') return language.spanish.selection_menu;
     }
   }
 

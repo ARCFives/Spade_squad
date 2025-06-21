@@ -118,4 +118,64 @@ export const language: ILanguages = {
       start_mission: 'START',
     },
   },
+  spanish: {
+    mainmenu: {
+      iniciar: {
+        x: 325,
+        y: 260,
+        text: 'Iniciar',
+      },
+      loja: {
+        x: 320,
+        y: 320,
+        text: 'Tienda',
+      },
+      controles: {
+        x: 290,
+        y: 380,
+        text: 'Controles',
+      },
+      creditos: {
+        x: 300,
+        y: 440,
+        text: 'Créditos',
+      },
+    },
+    controls: {
+      mainText: 'Controles',
+      moveDown: 'Mover hacia abajo',
+      moveUp: 'Mover hacia arriba',
+      moveLeft: 'Mover hacia la izquierda',
+      moveRight: 'Mover hacia la derecha',
+      pause: 'Pausa',
+      playerShoot: 'Disparar arma',
+      playerMissile: 'Disparar misil',
+      callRefuelling: 'Solicitar reabastecimiento',
+    },
+    store: {
+      engineIDescription: 'Ahorra un 50% de combustible.',
+      engineIIDescription: 'Aumenta la velocidad en un 20%.',
+      gunIDescription:
+        'Comienza con el doble de munición en el arma principal.',
+      missileIDescription: 'Comienza con 1 misil adicional en los pods.',
+      missileIIDescription: 'Comienza con 2 misiles adicionales en los pods.',
+      refuellingDescription:
+        'Puede pedir un avión de reabastecimiento presionando X.',
+    },
+    pauseGame: {
+      resume: 'CONTINUAR',
+      mainMenu: 'MENÚ PRINCIPAL',
+    },
+    gameover: {
+      reset: 'Presiona R para reiniciar',
+      mainmenu: 'MENÚ PRINCIPAL',
+    },
+    selection_menu: {
+      title: 'Selecciona una aeronave',
+      fuel: 'Combustible',
+      speed: 'Velocidad',
+      weapons: 'Armamento',
+      start_mission: 'INICIAR',
+    },
+  },
 };

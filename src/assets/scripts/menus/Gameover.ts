@@ -18,6 +18,7 @@ export class Gameover extends Scene {
     const getLanguage = localStorage.getItem('spade-language') as string;
     if (getLanguage === 'portugues') return language.portugues.gameover;
     if (getLanguage === 'english') return language.english.gameover;
+    if (getLanguage === 'spanish') return language.spanish.gameover;
   }
 
   create() {

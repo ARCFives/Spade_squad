@@ -10,12 +10,16 @@ export class MainMenu extends BaseMenu {
   private credits!: GameObjects.Text;
   private music!: Sound.BaseSound;
   private soundToggle!: GameObjects.Image;
+  private changeLanguage!: GameObjects.Sprite;
 
   constructor() {
     super('mainmenu');
   }
 
   protected addButtons() {
+    const whatLanguage: string = localStorage.getItem(
+      'spade-language'
+    ) as string;
     const getLanguage: IMainmenuText = this.checkLanguage(
       'mainmenu'
     ) as IMainmenuText;
@@ -48,6 +52,31 @@ export class MainMenu extends BaseMenu {
       `${getLanguage.creditos.text}`,
       this.openCredits.bind(this)
     );
+    this.changeLanguage = this.add
+      .sprite(50, 580, 'languages', this.getFlagLanguage(whatLanguage))
+      .setScale(1.3)
+      .setInteractive();
+    this.changeLanguage.on('pointerup', () => this.onChangeLanguage());
+  }
+
+  private onChangeLanguage() {
+    const actualLanguage: string = localStorage.getItem(
+      'spade-language'
+    ) as string;
+    if (actualLanguage === 'portugues') {
+      localStorage.setItem('spade-language', 'english');
+    } else if (actualLanguage === 'english') {
+      localStorage.setItem('spade-language', 'spanish');
+    } else {
+      localStorage.setItem('spade-language', 'portugues');
+    }
+    this.scene.restart(this);
+  }
+
+  private getFlagLanguage(language: string): number {
+    if (language === 'portugues') return 0;
+    else if (language === 'english') return 1;
+    else return 2;
   }
 
   private addHighscore() {
