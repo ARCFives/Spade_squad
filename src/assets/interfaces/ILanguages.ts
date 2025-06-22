@@ -38,7 +38,8 @@ export interface ILanguages {
       engineIIDescription: string;
       gunIDescription: string;
       missileIDescription: string;
-      missileIIDescription: string;
+      aircraftLvIDescription: string;
+      aircraftLvIIDescription: string;
       refuellingDescription: string;
     };
     pauseGame: {
@@ -96,7 +97,8 @@ export interface ILanguages {
       engineIIDescription: string;
       gunIDescription: string;
       missileIDescription: string;
-      missileIIDescription: string;
+      aircraftLvIDescription: string;
+      aircraftLvIIDescription: string;
       refuellingDescription: string;
     };
     pauseGame: {
@@ -154,7 +156,8 @@ export interface ILanguages {
       engineIIDescription: string;
       gunIDescription: string;
       missileIDescription: string;
-      missileIIDescription: string;
+      aircraftLvIDescription: string;
+      aircraftLvIIDescription: string;
       refuellingDescription: string;
     };
     pauseGame: {

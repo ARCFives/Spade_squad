@@ -122,7 +122,7 @@ export class Player extends GameObjects.Container {
     if (this.keys.shoot.isDown && time > this.lastFired && this.ammoCount > 0) {
       const shoot = this.shoots.create(
         this.x + this.configPlane.main_gun_fire_X,
-        this.y,
+        this.y + this.configPlane.main_gun_fire_y,
         'shoot'
       );
       this.muzzleFlash

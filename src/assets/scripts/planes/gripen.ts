@@ -19,6 +19,7 @@ export const GRIPEN: IPlanesConfig = {
   misssileAttached_X: -25,
   misssileAttached_Y: 6,
   main_gun_fire_X: 60,
+  main_gun_fire_y: 8,
   origin_X: 40,
   origin_Y: 300,
   name_menu_x: 470,

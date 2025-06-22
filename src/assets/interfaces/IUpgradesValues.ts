@@ -1,8 +1,9 @@
 export interface IUpgradesValues {
-    engineLvI: number
-    engineLvII: number
-    missileI: number
-    missileII: number
-    gunLvI: number
-    airfuelling: number
+  engineLvI: number;
+  engineLvII: number;
+  missileI: number;
+  gunLvI: number;
+  airfuelling: number;
+  aircraftLvI: number;
+  aircraftLvII: number;
 }

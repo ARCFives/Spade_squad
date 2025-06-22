@@ -214,6 +214,7 @@ export class PlaneSelection extends BaseMenu {
   }
 
   private startGame(plane: string) {
+    this.sound.play('menuAudio');
     this.registry.set('playerAircraft', plane);
     this.time.delayedCall(
       500,

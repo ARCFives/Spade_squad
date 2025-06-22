@@ -17,6 +17,7 @@ export interface IPlanesConfig {
   misssileAttached_X: number;
   misssileAttached_Y: number;
   main_gun_fire_X: number;
+  main_gun_fire_y: number;
   origin_X: number;
   origin_Y: number;
   name_menu_x: number;

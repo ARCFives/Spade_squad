@@ -9,11 +9,11 @@ export const gameConfig: Types.Core.GameConfig = {
   backgroundColor: '#000000',
   pixelArt: true,
   title: 'Spade Squad',
-  version: '1.0.0',
+  version: '1.1.1',
   physics: {
     default: 'arcade',
     arcade: {
-      debug: true,
+      debug: false,
     },
   },
   autoFocus: true,

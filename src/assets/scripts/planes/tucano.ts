@@ -19,6 +19,7 @@ export const TUCANO: IPlanesConfig = {
   misssileAttached_X: 11,
   misssileAttached_Y: 6,
   main_gun_fire_X: 40,
+  main_gun_fire_y: 5,
   origin_X: 40,
   origin_Y: 300,
   name_menu_x: 440,

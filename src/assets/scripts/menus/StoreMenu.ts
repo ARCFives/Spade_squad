@@ -5,9 +5,11 @@ import { IPlayerStoreUpgrades } from 'assets/interfaces/IPlayerStoreUpgrades';
 import { UPGRADES_VALUE } from 'assets/utils/constants_variables';
 import { IUpgrades } from 'assets/interfaces/IUpgrades';
 import { IStoreText } from 'assets/interfaces/texts/IStoreText';
+import { IPlayerAircraftHidden } from 'assets/interfaces/IPlayerAircraftHidden';
 
 export class StoreMenu extends BaseMenu {
   private upgradesPaid!: IUpgrades;
+  private aircraftsUnlock!: IPlayerAircraftHidden;
   private playerCash!: string;
   private itemDescription!: GameObjects.Text;
   private playerCashText!: GameObjects.Text;
@@ -45,11 +47,11 @@ export class StoreMenu extends BaseMenu {
         `$${UPGRADES_VALUE.missileI}`,
         storeText
       ),
-      missileII: this.add.sprite(440, 530, 'cards', 4).setInteractive(),
-      missileIIValue: this.add.text(
+      aircraftLvI: this.add.sprite(440, 530, 'cards', 6).setInteractive(),
+      aircraftLvIValue: this.add.text(
         412,
         555,
-        `$${UPGRADES_VALUE.missileII}`,
+        `$${UPGRADES_VALUE.aircraftLvI}`,
         storeText
       ),
       gunLvI: this.add.sprite(200, 530, 'cards', 2).setInteractive(),
@@ -66,12 +68,22 @@ export class StoreMenu extends BaseMenu {
         `$${UPGRADES_VALUE.airfuelling}`,
         storeText
       ),
+      aircraftLvII: this.add.sprite(560, 530, 'cards', 7).setInteractive(),
+      aircraftLvIIValue: this.add.text(
+        532,
+        555,
+        `$${UPGRADES_VALUE.aircraftLvII}`,
+        storeText
+      ),
     };
   }
 
   private addInfos() {
     this.upgradesPaid = JSON.parse(
       localStorage.getItem('spadeUpgrades') as string
+    );
+    this.aircraftsUnlock = JSON.parse(
+      localStorage.getItem('spadePlayerAircraft') as string
     );
     this.playerCash = localStorage.getItem('spadeCash') as string;
     this.itemDescription = this.add.text(500, 60, '', {
@@ -108,6 +120,7 @@ export class StoreMenu extends BaseMenu {
       }
     });
     this.playerUpgradesStore.engineLvI.on('pointerover', () => {
+      if (this.upgradesPaid.engineLvI) return;
       this.itemDescription.setText(`${description}`);
     });
     this.playerUpgradesStore.engineLvIValue.on('pointerout', () => {
@@ -136,6 +149,7 @@ export class StoreMenu extends BaseMenu {
       }
     });
     this.playerUpgradesStore.engineLvII.on('pointerover', () => {
+      if (this.upgradesPaid.engineLvII) return;
       this.itemDescription.setText(`${description}`);
     });
     this.playerUpgradesStore.engineLvII.on('pointerout', () => {
@@ -165,6 +179,7 @@ export class StoreMenu extends BaseMenu {
       }
     });
     this.playerUpgradesStore.airfuelling.on('pointerover', () => {
+      if (this.upgradesPaid.airfuelling) return;
       this.itemDescription.setText(`${description}`);
     });
     this.playerUpgradesStore.airfuelling.on('pointerout', () => {
@@ -193,6 +208,7 @@ export class StoreMenu extends BaseMenu {
       }
     });
     this.playerUpgradesStore.gunLvI.on('pointerover', () => {
+      if (this.upgradesPaid.mainGunI) return;
       this.itemDescription.setText(`${description}`);
     });
     this.playerUpgradesStore.gunLvI.on('pointerout', () => {
@@ -221,6 +237,7 @@ export class StoreMenu extends BaseMenu {
       }
     });
     this.playerUpgradesStore.missileI.on('pointerover', () => {
+      if (this.upgradesPaid.missileI) return;
       this.itemDescription.setText(`${description}`);
     });
     this.playerUpgradesStore.missileI.on('pointerout', () => {
@@ -228,30 +245,60 @@ export class StoreMenu extends BaseMenu {
     });
   }
 
-  private missileIIUp(description: string) {
-    if (this.upgradesPaid.missileII) {
-      this.playerUpgradesStore.missileII.setAlpha(0.3);
-      this.playerUpgradesStore.missileIIValue.setAlpha(0.3);
+  private amxUnlock(description: string) {
+    if (this.aircraftsUnlock.amx) {
+      this.playerUpgradesStore.aircraftLvI.setAlpha(0.3);
+      this.playerUpgradesStore.aircraftLvIValue.setAlpha(0.3);
     }
-    this.playerUpgradesStore.missileII.on('pointerup', () => {
-      if (this.upgradesPaid.missileII) return;
-      if (parseInt(this.playerCash) >= UPGRADES_VALUE.missileII) {
+    this.playerUpgradesStore.aircraftLvI.on('pointerup', () => {
+      if (this.aircraftsUnlock.amx) return;
+      if (parseInt(this.playerCash) >= UPGRADES_VALUE.aircraftLvI) {
         const playerLowerCash =
-          parseInt(this.playerCash) - UPGRADES_VALUE.missileII;
+          parseInt(this.playerCash) - UPGRADES_VALUE.aircraftLvI;
         this.sound.play('coinSound');
-        const upgrade = { ...this.upgradesPaid, missileII: true };
-        this.playerUpgradesStore.missileII.setAlpha(0.3);
-        this.playerUpgradesStore.missileIIValue.setAlpha(0.3);
-        localStorage.setItem('spadeUpgrades', JSON.stringify(upgrade));
+        const upgrade = { ...this.aircraftsUnlock, amx: true };
+        this.playerUpgradesStore.aircraftLvI.setAlpha(0.3);
+        this.playerUpgradesStore.aircraftLvIValue.setAlpha(0.3);
+        localStorage.setItem('spadePlayerAircraft', JSON.stringify(upgrade));
         localStorage.setItem('spadeCash', playerLowerCash.toString());
         this.playerCash = localStorage.getItem('spadeCash') as string;
         this.playerCashText.setText(`$ ${this.playerCash}`);
       }
     });
-    this.playerUpgradesStore.missileII.on('pointerover', () => {
+    this.playerUpgradesStore.aircraftLvI.on('pointerover', () => {
+      if (this.aircraftsUnlock.amx) return;
       this.itemDescription.setText(`${description}`);
     });
-    this.playerUpgradesStore.missileII.on('pointerout', () => {
+    this.playerUpgradesStore.aircraftLvI.on('pointerout', () => {
+      this.itemDescription.setText('');
+    });
+  }
+
+  private gripenUnlock(description: string) {
+    if (this.aircraftsUnlock.gripen) {
+      this.playerUpgradesStore.aircraftLvII.setAlpha(0.3);
+      this.playerUpgradesStore.aircraftLvIIValue.setAlpha(0.3);
+    }
+    this.playerUpgradesStore.aircraftLvII.on('pointerup', () => {
+      if (this.aircraftsUnlock.gripen) return;
+      if (parseInt(this.playerCash) >= UPGRADES_VALUE.aircraftLvII) {
+        const playerLowerCash =
+          parseInt(this.playerCash) - UPGRADES_VALUE.aircraftLvII;
+        this.sound.play('coinSound');
+        const upgrade = { ...this.aircraftsUnlock, gripen: true };
+        this.playerUpgradesStore.aircraftLvII.setAlpha(0.3);
+        this.playerUpgradesStore.aircraftLvIIValue.setAlpha(0.3);
+        localStorage.setItem('spadePlayerAircraft', JSON.stringify(upgrade));
+        localStorage.setItem('spadeCash', playerLowerCash.toString());
+        this.playerCash = localStorage.getItem('spadeCash') as string;
+        this.playerCashText.setText(`$ ${this.playerCash}`);
+      }
+    });
+    this.playerUpgradesStore.aircraftLvII.on('pointerover', () => {
+      if (this.aircraftsUnlock.gripen) return;
+      this.itemDescription.setText(`${description}`);
+    });
+    this.playerUpgradesStore.aircraftLvII.on('pointerout', () => {
       this.itemDescription.setText('');
     });
   }
@@ -264,7 +311,8 @@ export class StoreMenu extends BaseMenu {
     this.engineECU(getLanguage.engineIDescription);
     this.gunUp(getLanguage.gunIDescription);
     this.missileIUp(getLanguage.missileIDescription);
-    this.missileIIUp(getLanguage.missileIIDescription);
+    this.amxUnlock(getLanguage.aircraftLvIDescription);
+    this.gripenUnlock(getLanguage.aircraftLvIIDescription);
     this.engineECUII(getLanguage.engineIIDescription);
     this.refuellingUp(getLanguage.refuellingDescription);
   }

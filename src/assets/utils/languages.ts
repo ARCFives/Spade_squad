@@ -37,12 +37,13 @@ export const language: ILanguages = {
     },
     store: {
       engineIDescription: 'Economiza 50% de combustível.',
-      engineIIDescription: 'Aumenta a velocidade em 20%.',
+      engineIIDescription: 'Aumenta a velocidade em 20%. [Requer: EngineLvI]',
       gunIDescription: 'Inicia com o dobro de munição na arma principal.',
-      missileIDescription: 'Começa com mais 1 míssil nos pods.',
-      missileIIDescription: 'Começa com mais 2 mísseis nos pods.',
+      missileIDescription: 'Inicia com o máximo de mísseis.',
+      aircraftLvIDescription: 'Desloquear aeronave AMX-A1.',
+      aircraftLvIIDescription: 'Desloquear aeronave F-39 Gripen.',
       refuellingDescription:
-        'Pode pedir um avião de abastecimento apertando X.',
+        'Pode pedir um avião de abastecimento apertando X. [Requer: EngineLvII]',
     },
     pauseGame: {
       resume: 'CONTINUAR',
@@ -95,12 +96,14 @@ export const language: ILanguages = {
       callRefuelling: 'Aerial Refueling',
     },
     store: {
-      engineIDescription: 'Saves 50% fuel.',
-      engineIIDescription: 'Increases speed by 20%.',
-      gunIDescription: 'Starts with double the ammo in the main gun.',
-      missileIDescription: 'Starts with 1 extra missile in the pods.',
-      missileIIDescription: 'Starts with 2 extra missiles in the pods.',
-      refuellingDescription: 'Can call a refueling plane by pressing X.',
+      engineIDescription: 'Saves 50% of fuel.',
+      engineIIDescription: 'Increases speed by 20%. [Requires: EngineLvI]',
+      gunIDescription: 'Starts with double the main gun ammo.',
+      missileIDescription: 'Starts with maximum missiles.',
+      aircraftLvIDescription: 'Unlocks AMX-A1 aircraft.',
+      aircraftLvIIDescription: 'Unlocks F-39 Gripen aircraft.',
+      refuellingDescription:
+        'Can request a refueling aircraft by pressing X. [Requires: EngineLvII]',
     },
     pauseGame: {
       resume: 'RESUME',
@@ -154,13 +157,14 @@ export const language: ILanguages = {
     },
     store: {
       engineIDescription: 'Ahorra un 50% de combustible.',
-      engineIIDescription: 'Aumenta la velocidad en un 20%.',
-      gunIDescription:
-        'Comienza con el doble de munición en el arma principal.',
-      missileIDescription: 'Comienza con 1 misil adicional en los pods.',
-      missileIIDescription: 'Comienza con 2 misiles adicionales en los pods.',
+      engineIIDescription:
+        'Aumenta la velocidad en un 20%. [Requiere: EngineLvI]',
+      gunIDescription: 'Empieza con el doble de munición en el arma principal.',
+      missileIDescription: 'Empieza con la cantidad máxima de misiles.',
+      aircraftLvIDescription: 'Desbloquea la aeronave AMX-A1.',
+      aircraftLvIIDescription: 'Desbloquea la aeronave F-39 Gripen.',
       refuellingDescription:
-        'Puede pedir un avión de reabastecimiento presionando X.',
+        'Puede solicitar un avión de reabastecimiento presionando X. [Requiere: EngineLvII]',
     },
     pauseGame: {
       resume: 'CONTINUAR',
