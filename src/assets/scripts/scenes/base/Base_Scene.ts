@@ -30,7 +30,7 @@ export abstract class BaseScene extends Scene {
   public playerEngineSound!: Sound.BaseSound;
   protected sceneName: string;
   protected abstract configPlane: IPlanesConfig;
-  protected upgradesPaid: IUpgrades;
+  protected upgradesPaid!: IUpgrades;
   private readonly AMMO_RELOAD_DELAY: number = 8000;
   private readonly MISSILE_BOX_DELAY: number = 15000;
   private readonly FUEL_CONSUME_DELAY: number = 5000;
@@ -40,15 +40,18 @@ export abstract class BaseScene extends Scene {
   constructor(key: string) {
     super(key);
     this.sceneName = key;
-    this.upgradesPaid = JSON.parse(
-      localStorage.getItem('spadeUpgrades') as string
-    );
   }
 
   // ####### REQUIRED IN "CREATE" METHOD SCENE AND METHODS (CONFIGSOUNDS, TIMERS, PHYSICSCOLLIDERS, CREATEGAMEOBJECTGROUPS)#######
 
   protected showHUD(): void {
     this.hud = new HUD(this, 0, 0);
+  }
+
+  protected loadUpgrades() {
+    this.upgradesPaid = JSON.parse(
+      localStorage.getItem('spadeUpgrades') as string,
+    );
   }
 
   protected abstract addBackground(): void;
@@ -66,7 +69,7 @@ export abstract class BaseScene extends Scene {
       this,
       this.configPlane.origin_X,
       this.configPlane.origin_Y,
-      this.configPlane.id
+      this.configPlane.id,
     );
     this.players.add(this.player);
     this.playerEngineSound.play();
@@ -96,21 +99,21 @@ export abstract class BaseScene extends Scene {
       this.ammoBoxsGroup,
       this.pickUpAmmoBox as Types.Physics.Arcade.ArcadePhysicsCallback,
       null!,
-      this
+      this,
     );
     this.physics.add.collider(
       this.player,
       this.missileBoxGroup,
       this.pickUpAmmoBox as Types.Physics.Arcade.ArcadePhysicsCallback,
       undefined,
-      this
+      this,
     );
     this.physics.add.collider(
       this.player,
       this.fuelGallonsGroup,
       this.pickUpFuelGallon as Types.Physics.Arcade.ArcadePhysicsCallback,
       undefined,
-      this
+      this,
     );
 
     // Objects Hit Colliders
@@ -119,21 +122,21 @@ export abstract class BaseScene extends Scene {
       this.ammoBoxsGroup,
       this.objectHit as Types.Physics.Arcade.ArcadePhysicsCallback,
       undefined,
-      this
+      this,
     );
     this.physics.add.collider(
       this.player.shoots,
       this.fuelGallonsGroup,
       this.objectHit as Types.Physics.Arcade.ArcadePhysicsCallback,
       undefined,
-      this
+      this,
     );
     this.physics.add.collider(
       this.player.shoots,
       this.missileBoxGroup,
       this.objectHit as Types.Physics.Arcade.ArcadePhysicsCallback,
       undefined,
-      this
+      this,
     );
 
     // Enemies Colliders
@@ -142,21 +145,21 @@ export abstract class BaseScene extends Scene {
       this.enemiesGroup,
       this.gameover,
       undefined,
-      this
+      this,
     );
     this.physics.add.collider(
       this.player.shoots,
       this.enemiesGroup,
       this.enemyHit as Types.Physics.Arcade.ArcadePhysicsCallback,
       undefined,
-      this
+      this,
     );
     this.physics.add.collider(
       this.player.missiles,
       this.enemiesGroup,
       this.enemyHit as Types.Physics.Arcade.ArcadePhysicsCallback,
       undefined,
-      this
+      this,
     );
   }
 
@@ -190,7 +193,7 @@ export abstract class BaseScene extends Scene {
 
   private objectHit(
     shoot: Physics.Arcade.Sprite,
-    object: Physics.Arcade.Sprite
+    object: Physics.Arcade.Sprite,
   ): void {
     if (!shoot || !object) return;
     this.add.sprite(object.x, object.y, 'explosion').play('explosion');
@@ -201,7 +204,7 @@ export abstract class BaseScene extends Scene {
 
   private enemyHit(
     shoot: Physics.Arcade.Sprite,
-    enemy: Physics.Arcade.Sprite
+    enemy: Physics.Arcade.Sprite,
   ): void {
     if (!shoot || !enemy) return;
     this.add.sprite(enemy.x, enemy.y, 'explosion').play('explosion');
@@ -213,7 +216,7 @@ export abstract class BaseScene extends Scene {
 
   private pickUpAmmoBox(
     player: Physics.Arcade.Sprite,
-    ammoBox: Physics.Arcade.Sprite
+    ammoBox: Physics.Arcade.Sprite,
   ): void {
     if (player.active === true && ammoBox.active === true) {
       if (ammoBox.texture.key === 'ammoBox') {
@@ -236,7 +239,7 @@ export abstract class BaseScene extends Scene {
 
   private pickUpFuelGallon(
     player: Physics.Arcade.Sprite,
-    fuelGallon: Physics.Arcade.Sprite
+    fuelGallon: Physics.Arcade.Sprite,
   ): void {
     if (player.active === true && fuelGallon.active === true) {
       this.sound.play('pickupAudio');
@@ -340,7 +343,7 @@ export abstract class BaseScene extends Scene {
     }
     localStorage.setItem(
       'spadeCash',
-      (score / 2 + parseInt(playerCash)).toString()
+      (score / 2 + parseInt(playerCash)).toString(),
     );
   }
 
@@ -373,7 +376,11 @@ export abstract class BaseScene extends Scene {
 
   // REQUIRED IN SCENE METHOD "UPDATE"
   protected playerFuelConsumeUpdate(): void {
-    if (this.playerFuel == 25) this.warningSound.play();
+    if (this.playerFuel == 50) this.events.emit('fuelBarFrame', 50);
+    if (this.playerFuel == 25) {
+      this.warningSound.play();
+      this.events.emit('fuelBarFrame', 25);
+    }
     if (this.playerFuel == 0) this.gameover();
   }
 
@@ -384,6 +391,7 @@ export abstract class BaseScene extends Scene {
   }
 
   public gameover(): void {
+    console.log(this.upgradesPaid);
     const score = parseInt(this.hud.scoreText.text);
     this.saveHighScore(score);
     this.input.stopPropagation();

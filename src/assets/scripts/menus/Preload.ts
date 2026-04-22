@@ -91,6 +91,10 @@ export class Preload extends Phaser.Scene {
       frameWidth: 6,
       frameHeight: 5,
     });
+    this.load.spritesheet('fuel_bar', 'fuelbars.png', {
+      frameWidth: 98,
+      frameHeight: 9,
+    });
     this.load.spritesheet('arrow_next', 'arrow.png', {
       frameWidth: 32,
       frameHeight: 32,
@@ -132,7 +136,6 @@ export class Preload extends Phaser.Scene {
     this.load.setPath('./assets/images/hud/');
     this.load.image('ammoIcon', 'ammoIcon.png');
     this.load.image('fuelIcon', 'fuelIcon.png');
-    this.load.image('fuelBar', 'fuelBar.png');
     this.load.image('profile', 'profile.png');
     this.load.image('soundStop', 'speakerMute.png');
     this.load.image('soundPlay', 'speakerOn.png');

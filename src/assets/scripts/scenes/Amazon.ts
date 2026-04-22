@@ -29,6 +29,7 @@ export class Amazon extends BaseScene {
   }
 
   create() {
+    this.loadUpgrades();
     this.configPlane = this.playerPlane(this.registry.get('playerAircraft'));
     this.playerFuel = 100;
     this.addBackground();

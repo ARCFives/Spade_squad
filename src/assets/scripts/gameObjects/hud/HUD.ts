@@ -21,20 +21,21 @@ export class HUD extends GameObjects.Container {
     this.scene.events.on(
       'playerMainGunReload',
       this.updateAmmoCountScreen,
-      this
+      this,
     );
     this.scene.events.on('playerMissileReload', this.updateMissile, this);
     this.scene.events.on(
       'playerFlyFuelConsume',
       this.updateBarFuelConsume,
-      this
+      this,
     );
     this.scene.events.on(
       'playerPickUpFuelGallon',
       this.updateBarFuelRefill,
-      this
+      this,
     );
     this.scene.events.on('enemyDestroy', this.updateScore, this);
+    this.scene.events.on('fuelBarFrame', this.updateFuelBarTexture, this);
   }
 
   private addGunsAndScoreInfo() {
@@ -48,13 +49,13 @@ export class HUD extends GameObjects.Container {
         22,
         10,
         INITIAL_AMMO_PLAYER.toString(),
-        textHUD
+        textHUD,
       );
       this.missileCountText = this.scene.add.text(
         126,
         10,
         INITIAL_MISSILE_PLAYER.toString(),
-        textHUD
+        textHUD,
       );
       this.scoreText = this.scene.add.text(350, 10, '000000', scoreTextHUD);
     });
@@ -62,7 +63,9 @@ export class HUD extends GameObjects.Container {
 
   private addFuelInfo() {
     this.scene.add.image(720, 20, 'fuelIcon');
-    this.fuelBar = this.scene.add.image(678, 19, 'fuelBar').setOrigin(0, 0.5);
+    this.fuelBar = this.scene.add
+      .image(679, 20, 'fuel_bar', 0)
+      .setOrigin(0, 0.5);
     this.originalFuelBarWidth = this.fuelBar.width;
     this.currentFuel = 100;
   }
@@ -91,7 +94,13 @@ export class HUD extends GameObjects.Container {
 
   private updateBarFuelRefill() {
     this.fuelBar.displayWidth = this.originalFuelBarWidth;
+    this.fuelBar.setFrame(0);
     this.currentFuel = 100;
+  }
+
+  private updateFuelBarTexture(value: number) {
+    if (value === 50) this.fuelBar.setFrame(1);
+    if (value === 25) this.fuelBar.setFrame(2);
   }
 
   private updateScore(score: number) {

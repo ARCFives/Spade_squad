@@ -3,7 +3,7 @@ import { BaseMenu } from './base/Base_Menu';
 import { storeText } from 'assets/utils/textsConfig';
 import { IPlayerStoreUpgrades } from 'assets/interfaces/IPlayerStoreUpgrades';
 import { UPGRADES_VALUE } from 'assets/utils/constants_variables';
-import { IUpgrades } from 'assets/interfaces/IUpgrades';
+import { IUpgrades, IUpgradesUpdate } from 'assets/interfaces/IUpgrades';
 import { IStoreText } from 'assets/interfaces/texts/IStoreText';
 import { IPlayerAircraftHidden } from 'assets/interfaces/IPlayerAircraftHidden';
 
@@ -31,59 +31,59 @@ export class StoreMenu extends BaseMenu {
         172,
         445,
         `$${UPGRADES_VALUE.engineLvI}`,
-        storeText
+        storeText,
       ),
       engineLvII: this.add.sprite(320, 420, 'cards', 1).setInteractive(),
       engineLvIIValue: this.add.text(
         292,
         445,
         `$${UPGRADES_VALUE.engineLvII}`,
-        storeText
+        storeText,
       ),
       missileI: this.add.sprite(320, 530, 'cards', 3).setInteractive(),
       missileIValue: this.add.text(
         292,
         555,
         `$${UPGRADES_VALUE.missileI}`,
-        storeText
+        storeText,
       ),
       aircraftLvI: this.add.sprite(440, 530, 'cards', 6).setInteractive(),
       aircraftLvIValue: this.add.text(
         412,
         555,
         `$${UPGRADES_VALUE.aircraftLvI}`,
-        storeText
+        storeText,
       ),
       gunLvI: this.add.sprite(200, 530, 'cards', 2).setInteractive(),
       gunLvIValue: this.add.text(
         172,
         555,
         `$${UPGRADES_VALUE.gunLvI}`,
-        storeText
+        storeText,
       ),
       airfuelling: this.add.sprite(440, 420, 'cards', 5).setInteractive(),
       airfuellingValue: this.add.text(
         412,
         445,
         `$${UPGRADES_VALUE.airfuelling}`,
-        storeText
+        storeText,
       ),
       aircraftLvII: this.add.sprite(560, 530, 'cards', 7).setInteractive(),
       aircraftLvIIValue: this.add.text(
         532,
         555,
         `$${UPGRADES_VALUE.aircraftLvII}`,
-        storeText
+        storeText,
       ),
     };
   }
 
   private addInfos() {
     this.upgradesPaid = JSON.parse(
-      localStorage.getItem('spadeUpgrades') as string
+      localStorage.getItem('spadeUpgrades') as string,
     );
     this.aircraftsUnlock = JSON.parse(
-      localStorage.getItem('spadePlayerAircraft') as string
+      localStorage.getItem('spadePlayerAircraft') as string,
     );
     this.playerCash = localStorage.getItem('spadeCash') as string;
     this.itemDescription = this.add.text(500, 60, '', {
@@ -99,6 +99,30 @@ export class StoreMenu extends BaseMenu {
     });
   }
 
+  // buy store event
+  private buyEvent(
+    type: 'upgrade' | 'aircraft',
+    value: number,
+    upgradePaid?: IUpgradesUpdate,
+  ) {
+    if (type === 'upgrade') {
+      const upgrade = { ...this.upgradesPaid, ...upgradePaid };
+      console.log(upgradePaid);
+      localStorage.setItem('spadeUpgrades', JSON.stringify(upgrade));
+      console.log(JSON.parse(localStorage.getItem('spadeUpgrades') as string));
+      this.upgradesPaid = upgrade;
+    } else if (type === 'aircraft') {
+      const upgrade = { ...this.aircraftsUnlock, ...upgradePaid };
+      localStorage.setItem('spadePlayerAircraft', JSON.stringify(upgrade));
+      this.aircraftsUnlock = upgrade;
+    }
+    this.sound.play('coinSound');
+    localStorage.setItem('spadeCash', value.toString());
+    this.playerCashText.setText(`$ ${localStorage.getItem('spadeCash')}`);
+  }
+
+  // ################ UPGRADES #########################
+
   private engineECU(description: string) {
     if (this.upgradesPaid.engineLvI) {
       this.playerUpgradesStore.engineLvI.setAlpha(0.3);
@@ -107,16 +131,11 @@ export class StoreMenu extends BaseMenu {
     this.playerUpgradesStore.engineLvI.on('pointerup', () => {
       if (this.upgradesPaid.engineLvI) return;
       if (parseInt(this.playerCash) >= UPGRADES_VALUE.engineLvI) {
-        const playerLowerCash =
+        const UPGRADE_COST =
           parseInt(this.playerCash) - UPGRADES_VALUE.engineLvI;
-        this.sound.play('coinSound');
-        const upgrade = { ...this.upgradesPaid, engineLvI: true };
         this.playerUpgradesStore.engineLvI.setAlpha(0.3);
         this.playerUpgradesStore.engineLvIValue.setAlpha(0.3);
-        localStorage.setItem('spadeUpgrades', JSON.stringify(upgrade));
-        localStorage.setItem('spadeCash', playerLowerCash.toString());
-        this.playerCash = localStorage.getItem('spadeCash') as string;
-        this.playerCashText.setText(`$ ${this.playerCash}`);
+        this.buyEvent('upgrade', UPGRADE_COST, { engineLvI: true });
       }
     });
     this.playerUpgradesStore.engineLvI.on('pointerover', () => {
@@ -136,16 +155,11 @@ export class StoreMenu extends BaseMenu {
     this.playerUpgradesStore.engineLvII.on('pointerup', () => {
       if (this.upgradesPaid.engineLvII || !this.upgradesPaid.engineLvI) return;
       if (parseInt(this.playerCash) >= UPGRADES_VALUE.engineLvII) {
-        const playerLowerCash =
+        const UPGRADE_COST =
           parseInt(this.playerCash) - UPGRADES_VALUE.engineLvII;
-        this.sound.play('coinSound');
-        const upgrade = { ...this.upgradesPaid, engineLvII: true };
         this.playerUpgradesStore.engineLvII.setAlpha(0.3);
         this.playerUpgradesStore.engineLvIIValue.setAlpha(0.3);
-        localStorage.setItem('spadeUpgrades', JSON.stringify(upgrade));
-        localStorage.setItem('spadeCash', playerLowerCash.toString());
-        this.playerCash = localStorage.getItem('spadeCash') as string;
-        this.playerCashText.setText(`$ ${this.playerCash}`);
+        this.buyEvent('upgrade', UPGRADE_COST, { engineLvII: true });
       }
     });
     this.playerUpgradesStore.engineLvII.on('pointerover', () => {
@@ -166,16 +180,11 @@ export class StoreMenu extends BaseMenu {
       if (this.upgradesPaid.airfuelling || !this.upgradesPaid.engineLvII)
         return;
       if (parseInt(this.playerCash) >= UPGRADES_VALUE.airfuelling) {
-        const playerLowerCash =
+        const UPGRADE_COST =
           parseInt(this.playerCash) - UPGRADES_VALUE.airfuelling;
-        this.sound.play('coinSound');
-        const upgrade = { ...this.upgradesPaid, airfuelling: true };
         this.playerUpgradesStore.airfuelling.setAlpha(0.3);
         this.playerUpgradesStore.airfuellingValue.setAlpha(0.3);
-        localStorage.setItem('spadeUpgrades', JSON.stringify(upgrade));
-        localStorage.setItem('spadeCash', playerLowerCash.toString());
-        this.playerCash = localStorage.getItem('spadeCash') as string;
-        this.playerCashText.setText(`$ ${this.playerCash}`);
+        this.buyEvent('upgrade', UPGRADE_COST, { airfuelling: true });
       }
     });
     this.playerUpgradesStore.airfuelling.on('pointerover', () => {
@@ -195,16 +204,10 @@ export class StoreMenu extends BaseMenu {
     this.playerUpgradesStore.gunLvI.on('pointerup', () => {
       if (this.upgradesPaid.mainGunI) return;
       if (parseInt(this.playerCash) >= UPGRADES_VALUE.gunLvI) {
-        const playerLowerCash =
-          parseInt(this.playerCash) - UPGRADES_VALUE.gunLvI;
-        this.sound.play('coinSound');
-        const upgrade = { ...this.upgradesPaid, mainGunI: true };
+        const UPGRADE_COST = parseInt(this.playerCash) - UPGRADES_VALUE.gunLvI;
         this.playerUpgradesStore.gunLvI.setAlpha(0.3);
         this.playerUpgradesStore.gunLvIValue.setAlpha(0.3);
-        localStorage.setItem('spadeUpgrades', JSON.stringify(upgrade));
-        localStorage.setItem('spadeCash', playerLowerCash.toString());
-        this.playerCash = localStorage.getItem('spadeCash') as string;
-        this.playerCashText.setText(`$ ${this.playerCash}`);
+        this.buyEvent('upgrade', UPGRADE_COST, { mainGunI: true });
       }
     });
     this.playerUpgradesStore.gunLvI.on('pointerover', () => {
@@ -224,16 +227,11 @@ export class StoreMenu extends BaseMenu {
     this.playerUpgradesStore.missileI.on('pointerup', () => {
       if (this.upgradesPaid.missileI) return;
       if (parseInt(this.playerCash) >= UPGRADES_VALUE.missileI) {
-        const playerLowerCash =
+        const UPGRADE_COST =
           parseInt(this.playerCash) - UPGRADES_VALUE.missileI;
-        this.sound.play('coinSound');
-        const upgrade = { ...this.upgradesPaid, missileI: true };
         this.playerUpgradesStore.missileI.setAlpha(0.3);
         this.playerUpgradesStore.missileIValue.setAlpha(0.3);
-        localStorage.setItem('spadeUpgrades', JSON.stringify(upgrade));
-        localStorage.setItem('spadeCash', playerLowerCash.toString());
-        this.playerCash = localStorage.getItem('spadeCash') as string;
-        this.playerCashText.setText(`$ ${this.playerCash}`);
+        this.buyEvent('upgrade', UPGRADE_COST, { missileI: true });
       }
     });
     this.playerUpgradesStore.missileI.on('pointerover', () => {
@@ -253,16 +251,11 @@ export class StoreMenu extends BaseMenu {
     this.playerUpgradesStore.aircraftLvI.on('pointerup', () => {
       if (this.aircraftsUnlock.amx) return;
       if (parseInt(this.playerCash) >= UPGRADES_VALUE.aircraftLvI) {
-        const playerLowerCash =
+        const UPGRADE_COST =
           parseInt(this.playerCash) - UPGRADES_VALUE.aircraftLvI;
-        this.sound.play('coinSound');
-        const upgrade = { ...this.aircraftsUnlock, amx: true };
         this.playerUpgradesStore.aircraftLvI.setAlpha(0.3);
         this.playerUpgradesStore.aircraftLvIValue.setAlpha(0.3);
-        localStorage.setItem('spadePlayerAircraft', JSON.stringify(upgrade));
-        localStorage.setItem('spadeCash', playerLowerCash.toString());
-        this.playerCash = localStorage.getItem('spadeCash') as string;
-        this.playerCashText.setText(`$ ${this.playerCash}`);
+        this.buyEvent('aircraft', UPGRADE_COST, { amx: true });
       }
     });
     this.playerUpgradesStore.aircraftLvI.on('pointerover', () => {
@@ -282,16 +275,11 @@ export class StoreMenu extends BaseMenu {
     this.playerUpgradesStore.aircraftLvII.on('pointerup', () => {
       if (this.aircraftsUnlock.gripen) return;
       if (parseInt(this.playerCash) >= UPGRADES_VALUE.aircraftLvII) {
-        const playerLowerCash =
+        const UPGRADE_COST =
           parseInt(this.playerCash) - UPGRADES_VALUE.aircraftLvII;
-        this.sound.play('coinSound');
-        const upgrade = { ...this.aircraftsUnlock, gripen: true };
         this.playerUpgradesStore.aircraftLvII.setAlpha(0.3);
         this.playerUpgradesStore.aircraftLvIIValue.setAlpha(0.3);
-        localStorage.setItem('spadePlayerAircraft', JSON.stringify(upgrade));
-        localStorage.setItem('spadeCash', playerLowerCash.toString());
-        this.playerCash = localStorage.getItem('spadeCash') as string;
-        this.playerCashText.setText(`$ ${this.playerCash}`);
+        this.buyEvent('aircraft', UPGRADE_COST, { gripen: true });
       }
     });
     this.playerUpgradesStore.aircraftLvII.on('pointerover', () => {
@@ -303,9 +291,11 @@ export class StoreMenu extends BaseMenu {
     });
   }
 
+  // ################## END ############################
+
   private addCardsUpgrades() {
     const getLanguage: IStoreText = this.checkLanguage(
-      'storemenu'
+      'storemenu',
     ) as IStoreText;
 
     this.engineECU(getLanguage.engineIDescription);
