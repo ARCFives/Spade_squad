@@ -160,8 +160,8 @@ export class StoreMenu extends BaseMenu {
     }
     this.playerUpgradesStore.engineLvII.on('pointerup', () => {
       if (this.upgradesPaid.engineLvII || !this.upgradesPaid.engineLvI) {
-        this.negativeBuy();
-        return;
+        if (this.upgradesPaid.engineLvII) return;
+        return this.negativeBuy();
       }
       if (parseInt(this.playerCash) >= UPGRADES_VALUE.engineLvII) {
         const UPGRADE_COST =
@@ -189,8 +189,8 @@ export class StoreMenu extends BaseMenu {
     }
     this.playerUpgradesStore.airfuelling.on('pointerup', () => {
       if (this.upgradesPaid.airfuelling || !this.upgradesPaid.engineLvII) {
-        this.negativeBuy();
-        return;
+        if (this.upgradesPaid.engineLvII) return;
+        return this.negativeBuy();
       }
       if (parseInt(this.playerCash) >= UPGRADES_VALUE.airfuelling) {
         const UPGRADE_COST =
