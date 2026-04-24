@@ -9,7 +9,7 @@ import { Player } from 'assets/scripts/gameObjects/player/Player';
 import { AMX } from 'assets/scripts/planes/amx';
 import { GRIPEN } from 'assets/scripts/planes/gripen';
 import { TUCANO } from 'assets/scripts/planes/tucano';
-import { GameObjects, Physics, Scene, Sound, Types } from 'phaser';
+import { GameObjects, Physics, Scene, Sound, Types, Math } from 'phaser';
 
 // ########### VERIFY REQUIRED METHODS ###########
 
@@ -197,7 +197,7 @@ export abstract class BaseScene extends Scene {
   ): void {
     if (!shoot || !object) return;
     this.add.sprite(object.x, object.y, 'explosion').play('explosion');
-    this.sound.play('explosionAudio');
+    this.sound.play('explosion_1');
     shoot.destroy();
     object.destroy();
   }
@@ -208,7 +208,7 @@ export abstract class BaseScene extends Scene {
   ): void {
     if (!shoot || !enemy) return;
     this.add.sprite(enemy.x, enemy.y, 'explosion').play('explosion');
-    this.sound.play('explosionAudio');
+    this.sound.play(this.explosionSoundRandom());
     this.events.emit('enemyDestroy', 100);
     shoot.destroy();
     enemy.destroy();
@@ -232,7 +232,7 @@ export abstract class BaseScene extends Scene {
         }
         this.events.emit('playerMissileReload', this.player.missileCount);
       }
-      this.sound.play('pickupAudio');
+      this.sound.play('wp_reload');
       ammoBox.destroy();
     }
   }
@@ -242,7 +242,7 @@ export abstract class BaseScene extends Scene {
     fuelGallon: Physics.Arcade.Sprite,
   ): void {
     if (player.active === true && fuelGallon.active === true) {
-      this.sound.play('pickupAudio');
+      this.sound.play('event_pickup');
       this.events.emit('playerPickUpFuelGallon');
       this.playerFuel = 100;
       this.warningSound.stop();
@@ -253,11 +253,11 @@ export abstract class BaseScene extends Scene {
   // ####### Sounds #######
 
   protected configSounds(): void {
-    this.warningSound = this.sound.add('warningAudio', {
+    this.warningSound = this.sound.add('alarm_fuel', {
       loop: true,
       volume: 0.3,
     });
-    this.airplaneRefuelingSound = this.sound.add('airplaneAudio', {
+    this.airplaneRefuelingSound = this.sound.add('event_airplane', {
       volume: 0.2,
     });
     this.playerEngineSound = this.sound.add(this.configPlane.engine_sound, {
@@ -347,6 +347,15 @@ export abstract class BaseScene extends Scene {
     );
   }
 
+  private explosionSoundRandom(): string {
+    const RANDOM_NUMBER: number = Math.RND.integerInRange(1, 2);
+    if (RANDOM_NUMBER === 1) {
+      return 'explosion_1';
+    } else {
+      return 'explosion_2';
+    }
+  }
+
   // ####### Check Upgrades #######
 
   public checkMainGunUpgrade(): number {
@@ -391,7 +400,6 @@ export abstract class BaseScene extends Scene {
   }
 
   public gameover(): void {
-    console.log(this.upgradesPaid);
     const score = parseInt(this.hud.scoreText.text);
     this.saveHighScore(score);
     this.input.stopPropagation();

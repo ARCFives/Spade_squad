@@ -1,11 +1,16 @@
 import { BaseScene } from 'assets/scripts/scenes/base/Base_Scene';
-import { scoreTextHUD, textHUD } from 'assets/utils/textsConfig';
+import {
+  scoreTextHUD,
+  textHUD,
+  textHUDViolation,
+} from 'assets/utils/textsConfig';
 import { GameObjects } from 'phaser';
 
 export class HUD extends GameObjects.Container {
   declare scene: BaseScene;
   private ammoCountText!: GameObjects.Text;
   private missileCountText!: GameObjects.Text;
+  private violationsCountText!: GameObjects.Text;
   public scoreText!: GameObjects.Text;
   private fuelBar!: GameObjects.Image;
   private originalFuelBarWidth!: number;
@@ -36,6 +41,7 @@ export class HUD extends GameObjects.Container {
     );
     this.scene.events.on('enemyDestroy', this.updateScore, this);
     this.scene.events.on('fuelBarFrame', this.updateFuelBarTexture, this);
+    this.scene.events.on('violation', this.updateViolationsCount, this);
   }
 
   private addGunsAndScoreInfo() {
@@ -43,7 +49,8 @@ export class HUD extends GameObjects.Container {
     const INITIAL_MISSILE_PLAYER = this.scene.checkMissileUpgrade();
 
     this.scene.add.image(36, 20, 'ammoIcon');
-    this.scene.add.image(140, 20, 'missileIcon');
+    this.scene.add.image(120, 20, 'missileIcon');
+    this.scene.add.image(204, 20, 'planeIcon');
     document.fonts.load('18px fontStandard').then(() => {
       this.ammoCountText = this.scene.add.text(
         22,
@@ -52,11 +59,12 @@ export class HUD extends GameObjects.Container {
         textHUD,
       );
       this.missileCountText = this.scene.add.text(
-        126,
+        112,
         10,
         INITIAL_MISSILE_PLAYER.toString(),
         textHUD,
       );
+      this.violationsCountText = this.scene.add.text(205, 10, '0', textHUD);
       this.scoreText = this.scene.add.text(350, 10, '000000', scoreTextHUD);
     });
   }
@@ -79,6 +87,14 @@ export class HUD extends GameObjects.Container {
   private updateAmmoCountScreen(ammoCount: string) {
     if (this.ammoCountText && this.ammoCountText.active) {
       this.ammoCountText.setText(ammoCount);
+    }
+  }
+
+  private updateViolationsCount(value: number) {
+    if (this.violationsCountText && this.violationsCountText.active) {
+      this.violationsCountText
+        .setText(value.toString())
+        .setStyle(textHUDViolation);
     }
   }
 

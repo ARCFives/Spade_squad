@@ -21,7 +21,7 @@ export class Amazon extends BaseScene {
   }
 
   addMusic() {
-    this.music = this.sound.add('levelAmazonMusic', {
+    this.music = this.sound.add('bg_amazon', {
       volume: 0.4,
       loop: true,
     });
@@ -32,6 +32,7 @@ export class Amazon extends BaseScene {
     this.loadUpgrades();
     this.configPlane = this.playerPlane(this.registry.get('playerAircraft'));
     this.playerFuel = 100;
+    this.registry.set('violations', 0);
     this.addBackground();
     this.showHUD();
     this.configSounds();

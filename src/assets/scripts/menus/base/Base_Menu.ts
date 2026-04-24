@@ -14,7 +14,7 @@ export abstract class BaseMenu extends Scene {
     x: number,
     y: number,
     text: string,
-    event: (param?: string) => void
+    event: (param?: string) => void,
   ): void {
     buttonName = this.add
       .text(x, y, `${text}`, menuPatternText)
@@ -34,14 +34,14 @@ export abstract class BaseMenu extends Scene {
       .setScale(2);
     this.backMenu.on('pointerup', () => {
       this.input.stopPropagation();
-      this.sound.play('menuAudio');
+      this.sound.play('int_back');
       this.scene.stop(this);
       this.scene.start('mainmenu');
     });
   }
 
   private playButtonClick(): void {
-    this.sound.play('menuAudio');
+    this.sound.play('int_select');
   }
 
   protected checkLanguage(type: string) {

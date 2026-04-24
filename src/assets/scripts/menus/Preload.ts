@@ -110,19 +110,30 @@ export class Preload extends Phaser.Scene {
 
   loadingAudios() {
     this.load.setPath('./assets/audio/');
-    this.load.audio('shootAudio', 'shoot.WAV');
-    this.load.audio('explosionAudio', 'explosion.wav');
-    this.load.audio('warningAudio', 'warning.wav');
-    this.load.audio('propeller_engine', 'propeller_engine.wav');
-    this.load.audio('jet_engine', 'jet_engine.wav');
-    this.load.audio('menuAudio', 'menu.wav');
-    this.load.audio('airplaneAudio', 'airplanePass.wav');
-    this.load.audio('pickupAudio', 'pickup.wav');
-    this.load.audio('missileAudio', 'missile.wav');
-    this.load.audio('emptyAudio', 'tick.wav');
-    this.load.audio('mainMenuMusic', 'mainmenu.ogg');
-    this.load.audio('levelAmazonMusic', 'amazonLevel.ogg');
-    this.load.audio('coinSound', 'coin.ogg');
+    // Gameplay Sounds
+    this.load.audio('wp_tucano', 'wp_tucano.wav');
+    this.load.audio('wp_reload', 'wp_reload.wav');
+    this.load.audio('wp_missile', 'wp_missile.wav');
+    this.load.audio('wp_gripen', 'wp_gripen.wav');
+    this.load.audio('wp_amx', 'wp_amx.wav');
+    this.load.audio('wp_tick', 'wp_click.wav');
+    this.load.audio('alarm_fuel', 'alarm_fuel.wav');
+    this.load.audio('alarm_violation', 'alarm_violation.wav');
+    this.load.audio('eg_gripen', 'eg_gripen.wav');
+    this.load.audio('eg_tucano', 'eg_tucano.wav');
+    this.load.audio('eg_amx', 'eg_amx.wav');
+    this.load.audio('event_airplane', 'event_airplane.wav');
+    this.load.audio('event_pickup', 'event_pickup.wav');
+    this.load.audio('explosion_1', 'explosion_1.wav');
+    this.load.audio('explosion_2', 'explosion_2.wav');
+    // Interface Sounds
+    this.load.audio('int_select', 'int_select.wav');
+    this.load.audio('int_back', 'int_back.wav');
+    this.load.audio('buy_sucess', 'buy_sucess.ogg');
+    this.load.audio('buy_negativ', 'buy_negativ.wav');
+    // BG Sounds
+    this.load.audio('bg_amazon', 'bg_amazon.ogg');
+    this.load.audio('bg_mainmenu', 'bg_mainmenu.ogg');
   }
 
   loadingImages() {
@@ -136,6 +147,7 @@ export class Preload extends Phaser.Scene {
     this.load.setPath('./assets/images/hud/');
     this.load.image('ammoIcon', 'ammoIcon.png');
     this.load.image('fuelIcon', 'fuelIcon.png');
+    this.load.image('planeIcon', 'plane_hud.png');
     this.load.image('profile', 'profile.png');
     this.load.image('soundStop', 'speakerMute.png');
     this.load.image('soundPlay', 'speakerOn.png');
@@ -199,7 +211,7 @@ export class Preload extends Phaser.Scene {
 
   missileAnimations() {
     this.anims.create({
-      key: 'missileFire',
+      key: 'missile_fly',
       frames: this.anims.generateFrameNames('missile', { frames: [0, 1] }),
       frameRate: 10,
       repeat: -1,

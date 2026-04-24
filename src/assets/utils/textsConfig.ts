@@ -6,6 +6,14 @@ export const textHUD = {
   strokeThickness: 1,
 };
 
+export const textHUDViolation = {
+  fontFamily: 'fontStandard',
+  fontSize: 18,
+  color: '#ff0000',
+  stroke: '#aa0000',
+  strokeThickness: 1,
+};
+
 export const gameoverText = {
   fontFamily: 'fontStandard',
   fontSize: 32,

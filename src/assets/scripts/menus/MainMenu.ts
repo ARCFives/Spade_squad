@@ -18,10 +18,10 @@ export class MainMenu extends BaseMenu {
 
   protected addButtons() {
     const whatLanguage: string = localStorage.getItem(
-      'spade-language'
+      'spade-language',
     ) as string;
     const getLanguage: IMainmenuText = this.checkLanguage(
-      'mainmenu'
+      'mainmenu',
     ) as IMainmenuText;
 
     this.addButtonMenu(
@@ -29,28 +29,28 @@ export class MainMenu extends BaseMenu {
       getLanguage.iniciar.x,
       getLanguage.iniciar.y,
       `${getLanguage.iniciar.text}`,
-      this.startGame.bind(this)
+      this.startGame.bind(this),
     );
     this.addButtonMenu(
       this.store,
       getLanguage.loja.x,
       getLanguage.loja.y,
       `${getLanguage.loja.text}`,
-      this.openStore.bind(this)
+      this.openStore.bind(this),
     );
     this.addButtonMenu(
       this.controls,
       getLanguage.controles.x,
       getLanguage.controles.y,
       `${getLanguage.controles.text}`,
-      this.openControls.bind(this)
+      this.openControls.bind(this),
     );
     this.addButtonMenu(
       this.credits,
       getLanguage.creditos.x,
       getLanguage.creditos.y,
       `${getLanguage.creditos.text}`,
-      this.openCredits.bind(this)
+      this.openCredits.bind(this),
     );
     this.changeLanguage = this.add
       .sprite(50, 580, 'languages', this.getFlagLanguage(whatLanguage))
@@ -61,7 +61,7 @@ export class MainMenu extends BaseMenu {
 
   private onChangeLanguage() {
     const actualLanguage: string = localStorage.getItem(
-      'spade-language'
+      'spade-language',
     ) as string;
     if (actualLanguage === 'portugues') {
       localStorage.setItem('spade-language', 'english');
@@ -87,7 +87,7 @@ export class MainMenu extends BaseMenu {
       `${
         localStorage.spadeScore ? localStorage.getItem('spadeScore') : '0000000'
       }`,
-      scoreTextMenu
+      scoreTextMenu,
     );
   }
 
@@ -100,7 +100,7 @@ export class MainMenu extends BaseMenu {
         this.scene.stop('mainmenu');
       },
       undefined,
-      this
+      this,
     );
     this.registry.set('musicPlay', false);
     this.registry.set('musicPlayFlag', false);
@@ -126,7 +126,7 @@ export class MainMenu extends BaseMenu {
   }
 
   private addMusic() {
-    this.music = this.sound.add('mainMenuMusic', { loop: true, volume: 0.2 });
+    this.music = this.sound.add('bg_mainmenu', { loop: true, volume: 0.2 });
     this.music.play();
   }
 

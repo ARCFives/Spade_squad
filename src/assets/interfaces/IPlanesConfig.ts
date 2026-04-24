@@ -8,10 +8,12 @@ export interface IPlanesConfig {
   max_missile: number;
   speed: number;
   max_speed: number;
+  fire_rate: number;
   fuel_consuption: number;
   fuel_effiency: number;
   fly_animation: string;
   engine_sound: string;
+  maingun_sound: string;
   muzzleFlash_X: number;
   muzzleFlash_Y: number;
   misssileAttached_X: number;

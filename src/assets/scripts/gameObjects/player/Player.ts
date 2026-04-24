@@ -17,6 +17,7 @@ export class Player extends GameObjects.Container {
   private muzzleFlash: Phaser.GameObjects.Sprite;
   private wingMissile: Phaser.GameObjects.Sprite;
   private lastFired: number = 0;
+  private missileLastFired: number = 0;
   private keys!: IPlayerControls;
   private configPlane: IPlanesConfig;
 
@@ -37,7 +38,7 @@ export class Player extends GameObjects.Container {
       .sprite(
         this.configPlane.muzzleFlash_X,
         this.configPlane.muzzleFlash_Y,
-        'muzzle_flash'
+        'muzzle_flash',
       )
       .setOrigin(0.5);
     this.muzzleFlash.setVisible(false);
@@ -46,13 +47,13 @@ export class Player extends GameObjects.Container {
       .sprite(
         this.configPlane.misssileAttached_X,
         this.configPlane.misssileAttached_Y,
-        'wing_missile'
+        'wing_missile',
       )
       .setOrigin(0.5);
 
     this.setSize(
       this.playerSprite.displayWidth,
-      this.playerSprite.displayHeight
+      this.playerSprite.displayHeight,
     );
 
     this.add(this.playerSprite);
@@ -79,10 +80,10 @@ export class Player extends GameObjects.Container {
       right: this.scene.input.keyboard!.addKey(Input.Keyboard.KeyCodes.RIGHT),
       shoot: this.scene.input.keyboard!.addKey(Input.Keyboard.KeyCodes.SPACE),
       missileShoot: this.scene.input.keyboard!.addKey(
-        Input.Keyboard.KeyCodes.SHIFT
+        Input.Keyboard.KeyCodes.SHIFT,
       ),
       airRefueling: this.scene.input.keyboard!.addKey(
-        Input.Keyboard.KeyCodes.X
+        Input.Keyboard.KeyCodes.X,
       ),
       pause: this.scene.input.keyboard!.addKey(Input.Keyboard.KeyCodes.ESC),
       W: this.scene.input.keyboard!.addKey(Input.Keyboard.KeyCodes.W),
@@ -123,7 +124,7 @@ export class Player extends GameObjects.Container {
       const shoot = this.shoots.create(
         this.x + this.configPlane.main_gun_fire_X,
         this.y + this.configPlane.main_gun_fire_y,
-        'shoot'
+        'shoot',
       );
       this.muzzleFlash
         .setVisible(true)
@@ -132,39 +133,39 @@ export class Player extends GameObjects.Container {
           this.muzzleFlash.setVisible(false);
         });
       shoot.setVelocityX(+200);
-      this.lastFired = time + 200;
+      this.lastFired = time + this.configPlane.fire_rate;
       this.ammoCount--;
-      this.scene.sound.play('shootAudio');
+      this.scene.sound.play(this.configPlane.maingun_sound);
       this.scene.events.emit('playerMainGun', this.ammoCount);
     }
     if (this.keys.shoot.isDown && time > this.lastFired && this.ammoCount === 0)
-      this.scene.sound.play('emptyAudio');
+      this.scene.sound.play('wp_tick');
   }
 
   private missilesFire(time: number) {
     if (
       this.keys.missileShoot.isDown &&
-      time > this.lastFired &&
+      time > this.missileLastFired &&
       this.missileCount > 0
     ) {
       const nearestEnemy = this.findEnemy();
       if (nearestEnemy) {
         const missile = this.missiles
           .create(this.x, this.y + 14, 'missile')
-          .play('missileFire');
-        this.scene.sound.play('missileAudio');
+          .play('missile_fly');
+        this.scene.sound.play('wp_missile');
         missile.target = nearestEnemy;
         this.missileCount -= 1;
-        this.lastFired = time + 200;
+        this.missileLastFired = time + 1000;
         this.scene.events.emit('playerFireMissile', this.missileCount);
       }
     }
     if (
       this.keys.missileShoot.isDown &&
-      time > this.lastFired &&
+      time > this.missileLastFired &&
       this.missileCount == 0
     ) {
-      this.scene.sound.play('emptyAudio');
+      this.scene.sound.play('wp_tick');
     }
   }
 
@@ -190,7 +191,7 @@ export class Player extends GameObjects.Container {
           this.x,
           this.y,
           enemy.x,
-          enemy.y
+          enemy.y,
         );
         if (distance < minDistance) {
           nearestEnemy = enemy;
@@ -207,12 +208,12 @@ export class Player extends GameObjects.Container {
         target?: Phaser.GameObjects.Sprite;
       };
       if (missile.target && missile.target.active) {
-        this.scene.physics.moveToObject(missile, missile.target, 200);
+        this.scene.physics.moveToObject(missile, missile.target, 300);
         const angle = Math.Angle.Between(
           missile.x,
           missile.y,
           missile.target.x,
-          missile.target.y
+          missile.target.y,
         );
         missile.setRotation(angle);
       }

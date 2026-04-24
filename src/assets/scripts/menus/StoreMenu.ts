@@ -99,7 +99,7 @@ export class StoreMenu extends BaseMenu {
     });
   }
 
-  // buy store event
+  // Buy store event
   private buyEvent(
     type: 'upgrade' | 'aircraft',
     value: number,
@@ -116,9 +116,13 @@ export class StoreMenu extends BaseMenu {
       localStorage.setItem('spadePlayerAircraft', JSON.stringify(upgrade));
       this.aircraftsUnlock = upgrade;
     }
-    this.sound.play('coinSound');
+    this.sound.play('buy_sucess');
     localStorage.setItem('spadeCash', value.toString());
     this.playerCashText.setText(`$ ${localStorage.getItem('spadeCash')}`);
+  }
+
+  private negativeBuy() {
+    this.sound.play('buy_negativ');
   }
 
   // ################ UPGRADES #########################
@@ -136,6 +140,8 @@ export class StoreMenu extends BaseMenu {
         this.playerUpgradesStore.engineLvI.setAlpha(0.3);
         this.playerUpgradesStore.engineLvIValue.setAlpha(0.3);
         this.buyEvent('upgrade', UPGRADE_COST, { engineLvI: true });
+      } else {
+        this.negativeBuy();
       }
     });
     this.playerUpgradesStore.engineLvI.on('pointerover', () => {
@@ -153,13 +159,18 @@ export class StoreMenu extends BaseMenu {
       this.playerUpgradesStore.engineLvIIValue.setAlpha(0.3);
     }
     this.playerUpgradesStore.engineLvII.on('pointerup', () => {
-      if (this.upgradesPaid.engineLvII || !this.upgradesPaid.engineLvI) return;
+      if (this.upgradesPaid.engineLvII || !this.upgradesPaid.engineLvI) {
+        this.negativeBuy();
+        return;
+      }
       if (parseInt(this.playerCash) >= UPGRADES_VALUE.engineLvII) {
         const UPGRADE_COST =
           parseInt(this.playerCash) - UPGRADES_VALUE.engineLvII;
         this.playerUpgradesStore.engineLvII.setAlpha(0.3);
         this.playerUpgradesStore.engineLvIIValue.setAlpha(0.3);
         this.buyEvent('upgrade', UPGRADE_COST, { engineLvII: true });
+      } else {
+        this.negativeBuy();
       }
     });
     this.playerUpgradesStore.engineLvII.on('pointerover', () => {
@@ -177,14 +188,18 @@ export class StoreMenu extends BaseMenu {
       this.playerUpgradesStore.airfuellingValue.setAlpha(0.3);
     }
     this.playerUpgradesStore.airfuelling.on('pointerup', () => {
-      if (this.upgradesPaid.airfuelling || !this.upgradesPaid.engineLvII)
+      if (this.upgradesPaid.airfuelling || !this.upgradesPaid.engineLvII) {
+        this.negativeBuy();
         return;
+      }
       if (parseInt(this.playerCash) >= UPGRADES_VALUE.airfuelling) {
         const UPGRADE_COST =
           parseInt(this.playerCash) - UPGRADES_VALUE.airfuelling;
         this.playerUpgradesStore.airfuelling.setAlpha(0.3);
         this.playerUpgradesStore.airfuellingValue.setAlpha(0.3);
         this.buyEvent('upgrade', UPGRADE_COST, { airfuelling: true });
+      } else {
+        this.negativeBuy();
       }
     });
     this.playerUpgradesStore.airfuelling.on('pointerover', () => {
@@ -208,6 +223,8 @@ export class StoreMenu extends BaseMenu {
         this.playerUpgradesStore.gunLvI.setAlpha(0.3);
         this.playerUpgradesStore.gunLvIValue.setAlpha(0.3);
         this.buyEvent('upgrade', UPGRADE_COST, { mainGunI: true });
+      } else {
+        this.negativeBuy();
       }
     });
     this.playerUpgradesStore.gunLvI.on('pointerover', () => {
@@ -232,6 +249,8 @@ export class StoreMenu extends BaseMenu {
         this.playerUpgradesStore.missileI.setAlpha(0.3);
         this.playerUpgradesStore.missileIValue.setAlpha(0.3);
         this.buyEvent('upgrade', UPGRADE_COST, { missileI: true });
+      } else {
+        this.negativeBuy();
       }
     });
     this.playerUpgradesStore.missileI.on('pointerover', () => {
@@ -256,6 +275,8 @@ export class StoreMenu extends BaseMenu {
         this.playerUpgradesStore.aircraftLvI.setAlpha(0.3);
         this.playerUpgradesStore.aircraftLvIValue.setAlpha(0.3);
         this.buyEvent('aircraft', UPGRADE_COST, { amx: true });
+      } else {
+        this.negativeBuy();
       }
     });
     this.playerUpgradesStore.aircraftLvI.on('pointerover', () => {
@@ -280,6 +301,8 @@ export class StoreMenu extends BaseMenu {
         this.playerUpgradesStore.aircraftLvII.setAlpha(0.3);
         this.playerUpgradesStore.aircraftLvIIValue.setAlpha(0.3);
         this.buyEvent('aircraft', UPGRADE_COST, { gripen: true });
+      } else {
+        this.negativeBuy();
       }
     });
     this.playerUpgradesStore.aircraftLvII.on('pointerover', () => {
