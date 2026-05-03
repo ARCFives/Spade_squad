@@ -9,7 +9,7 @@ export class Preload extends Phaser.Scene {
     let progressBar = this.add.graphics();
     let progressBox = this.add.graphics();
     let loadingText = this.make.text({
-      x: 315,
+      x: 340,
       y: 450,
       text: 'Carrengando...',
       style: {
@@ -18,12 +18,12 @@ export class Preload extends Phaser.Scene {
       },
     });
 
-    progressBox.fillStyle(0x222222, 0.8);
+    progressBox.fillStyle(0x888888, 0.5);
     progressBox.fillRect(240, 480, 320, 12);
 
     this.load.on('progress', function (value: number) {
       progressBar.clear();
-      progressBar.fillStyle(0x880000, 1);
+      progressBar.fillStyle(0xbb0000, 1);
       progressBar.fillRect(240, 480, 300 * value, 12);
     });
     this.load.on('complete', function () {
@@ -117,6 +117,7 @@ export class Preload extends Phaser.Scene {
     this.load.audio('wp_gripen', 'wp_gripen.wav');
     this.load.audio('wp_amx', 'wp_amx.wav');
     this.load.audio('wp_tick', 'wp_click.wav');
+    this.load.audio('wp_heat', 'wp_heat.wav');
     this.load.audio('alarm_fuel', 'alarm_fuel.wav');
     this.load.audio('alarm_violation', 'alarm_violation.wav');
     this.load.audio('eg_gripen', 'eg_gripen.wav');
@@ -147,6 +148,7 @@ export class Preload extends Phaser.Scene {
     this.load.setPath('./assets/images/hud/');
     this.load.image('ammoIcon', 'ammoIcon.png');
     this.load.image('fuelIcon', 'fuelIcon.png');
+    this.load.image('heatIcon', 'heathud.png');
     this.load.image('planeIcon', 'plane_hud.png');
     this.load.image('profile', 'profile.png');
     this.load.image('soundStop', 'speakerMute.png');

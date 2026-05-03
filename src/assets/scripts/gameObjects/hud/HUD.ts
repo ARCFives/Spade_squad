@@ -15,12 +15,17 @@ export class HUD extends GameObjects.Container {
   private fuelBar!: GameObjects.Image;
   private originalFuelBarWidth!: number;
   private currentFuel!: number;
+  private heatBar!: GameObjects.Image;
+  private originalHeatBarWidth: number = 0;
+  private currentHeat: number = 0;
+  private COOLDOWN_RATE!: number;
 
   constructor(scene: BaseScene, x: number, y: number) {
     super(scene, x, y);
     scene.add.existing(this);
     this.addGunsAndScoreInfo();
     this.addFuelInfo();
+    this.addMaingunHeatInfo();
     this.scene.events.on('playerMainGun', this.updateAmmoCountScreen, this);
     this.scene.events.on('playerFireMissile', this.updateMissile, this);
     this.scene.events.on(
@@ -42,6 +47,12 @@ export class HUD extends GameObjects.Container {
     this.scene.events.on('enemyDestroy', this.updateScore, this);
     this.scene.events.on('fuelBarFrame', this.updateFuelBarTexture, this);
     this.scene.events.on('violation', this.updateViolationsCount, this);
+    this.scene.events.on('maingunHeat', this.updateMaingunHeat, this);
+    this.scene.events.on(
+      'playerConfigCooldownRate',
+      this.aircraftCooldown,
+      this,
+    );
   }
 
   private addGunsAndScoreInfo() {
@@ -76,6 +87,30 @@ export class HUD extends GameObjects.Container {
       .setOrigin(0, 0.5);
     this.originalFuelBarWidth = this.fuelBar.width;
     this.currentFuel = 100;
+  }
+
+  private addMaingunHeatInfo() {
+    this.scene.add.image(580, 20, 'heatIcon');
+    this.heatBar = this.scene.add
+      .image(539, 20, 'fuel_bar', 0)
+      .setOrigin(0, 0.5);
+    this.originalHeatBarWidth = 100;
+    this.heatBar.displayWidth = 0;
+  }
+
+  // ######### Update Infos #############
+
+  private updateMaingunHeat(heat: number) {
+    this.currentHeat = heat;
+    if (this.currentHeat > 100) {
+      this.currentHeat = 100;
+    }
+    if (this.currentHeat >= this.COOLDOWN_RATE) this.heatBar.setFrame(1);
+    if (this.currentHeat >= 80) this.heatBar.setFrame(2);
+    if (this.currentHeat < this.COOLDOWN_RATE) this.heatBar.setFrame(0);
+    const newWidth: number =
+      (this.currentHeat / 100) * this.originalHeatBarWidth;
+    this.heatBar.displayWidth = newWidth;
   }
 
   private updateMissile(missileCount: string) {
@@ -117,6 +152,10 @@ export class HUD extends GameObjects.Container {
   private updateFuelBarTexture(value: number) {
     if (value === 50) this.fuelBar.setFrame(1);
     if (value === 25) this.fuelBar.setFrame(2);
+  }
+
+  private aircraftCooldown(cooldown_rate: number) {
+    return (this.COOLDOWN_RATE = cooldown_rate);
   }
 
   private updateScore(score: number) {

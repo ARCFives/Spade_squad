@@ -12,7 +12,7 @@ export class Enemy extends GameObjects.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this);
     this.speed = randomSpeedEnemy(50, 120);
-    this.play(`${enemyType}Fly`); // Play the enemy animation
+    this.play(`${enemyType}Fly`);
     this.body.setVelocityX(-this.speed);
   }
 

@@ -9,6 +9,8 @@ export interface IPlanesConfig {
   speed: number;
   max_speed: number;
   fire_rate: number;
+  heat_per_shoot: number;
+  cooldown_rate: number;
   fuel_consuption: number;
   fuel_effiency: number;
   fly_animation: string;

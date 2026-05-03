@@ -24,7 +24,7 @@ export class DevScreen extends Scene {
           missileII: false,
           mainGunI: false,
           airfuelling: false,
-        })
+        }),
       );
     }
   }
@@ -37,19 +37,19 @@ export class DevScreen extends Scene {
         JSON.stringify({
           amx: false,
           gripen: false,
-        })
+        }),
       );
     }
   }
 
   create() {
     document.fonts.load('18px fontStandard').then(() => {
-      this.add.text(300, 350, 'github/ARCFives', {
+      this.add.text(300, 410, 'github/ARCFives', {
         fontSize: 22,
         fontFamily: 'fontStandard',
         color: '#fff',
       });
-      this.add.image(400, 200, 'profile').setDisplaySize(256, 256);
+      this.add.image(400, 260, 'profile').setDisplaySize(256, 256);
     });
     this.verifiedPlayerAircraft();
     this.verifiedPlayerCash();

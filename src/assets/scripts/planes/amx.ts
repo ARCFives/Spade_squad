@@ -11,6 +11,8 @@ export const AMX: IPlanesConfig = {
   speed: 180,
   max_speed: 210,
   fire_rate: 200,
+  heat_per_shoot: 7,
+  cooldown_rate: 52,
   fuel_consuption: 6.25,
   fuel_effiency: 3.75,
   fly_animation: 'amx_fly',

@@ -7,6 +7,8 @@ export class Player extends GameObjects.Container {
   declare body: Phaser.Physics.Arcade.Body; // Declare the body property to be of type Body
   declare scene: BaseScene; // Declare the scene property to be of type Base scene
   public ammoCount: number;
+  private heat: number = 0;
+  private isOverheated: boolean = false;
   public missileCount: number;
   private hasAirfuelling: number;
   public shoots: Physics.Arcade.Group;
@@ -30,6 +32,10 @@ export class Player extends GameObjects.Container {
     this.ammoCount = scene.checkMainGunUpgrade();
     this.missileCount = scene.checkMissileUpgrade();
     this.hasAirfuelling = scene.checkRefuelUpgrade();
+    scene.events.emit(
+      'playerConfigCooldownRate',
+      this.configPlane.cooldown_rate,
+    );
 
     this.playerSprite = scene.add.sprite(0, 0, plane_id).setOrigin(0.5);
     this.playerSprite.anims.play(this.configPlane.fly_animation);
@@ -120,7 +126,25 @@ export class Player extends GameObjects.Container {
   }
 
   private mainGun(time: number) {
+    if (this.isOverheated) {
+      if (
+        this.keys.shoot.isDown &&
+        time > this.lastFired &&
+        this.ammoCount > 0
+      ) {
+        this.scene.sound.play('wp_heat');
+      }
+      return;
+    }
+
     if (this.keys.shoot.isDown && time > this.lastFired && this.ammoCount > 0) {
+      if (this.heat + this.configPlane.heat_per_shoot >= 100) {
+        this.heat = 100;
+        this.isOverheated = true;
+        this.scene.sound.play('wp_heat');
+        this.scene.events.emit('maingunHeat', this.heat);
+        return;
+      }
       const shoot = this.shoots.create(
         this.x + this.configPlane.main_gun_fire_X,
         this.y + this.configPlane.main_gun_fire_y,
@@ -132,14 +156,23 @@ export class Player extends GameObjects.Container {
         .once('animationcomplete', () => {
           this.muzzleFlash.setVisible(false);
         });
-      shoot.setVelocityX(+200);
+      shoot.setVelocityX(+this.speedGunOverheat());
       this.lastFired = time + this.configPlane.fire_rate;
       this.ammoCount--;
+      this.heat += this.configPlane.heat_per_shoot;
+      this.heat = Math.Clamp(this.heat, 0, 100);
       this.scene.sound.play(this.configPlane.maingun_sound);
+      this.scene.events.emit('maingunHeat', this.heat);
       this.scene.events.emit('playerMainGun', this.ammoCount);
     }
+
     if (this.keys.shoot.isDown && time > this.lastFired && this.ammoCount === 0)
       this.scene.sound.play('wp_tick');
+  }
+
+  private speedGunOverheat(): number {
+    if (this.heat >= 70) return 220;
+    return 300;
   }
 
   private missilesFire(time: number) {
@@ -208,7 +241,7 @@ export class Player extends GameObjects.Container {
         target?: Phaser.GameObjects.Sprite;
       };
       if (missile.target && missile.target.active) {
-        this.scene.physics.moveToObject(missile, missile.target, 300);
+        this.scene.physics.moveToObject(missile, missile.target, 400);
         const angle = Math.Angle.Between(
           missile.x,
           missile.y,
@@ -256,12 +289,28 @@ export class Player extends GameObjects.Container {
     }
   }
 
+  private maingunCooling(delta: number) {
+    if (this.heat > 0) {
+      if (!this.keys.shoot.isDown) {
+        this.heat -= this.configPlane.cooldown_rate * (delta / 1000) * 0.3;
+      }
+      this.heat = Math.Clamp(this.heat, 0, 100);
+    }
+
+    if (this.isOverheated && this.heat <= 100 * 0.3) {
+      this.isOverheated = false;
+    }
+    this.scene.events.emit('maingunHeat', this.heat);
+  }
+
   // ####### Phaser base #######
 
-  update(time: number) {
+  update(time: number, delta: number) {
+    this.maingunCooling(delta);
+
     this.movement();
-    this.mainGun(time);
     this.pauseGame();
+    this.mainGun(time);
     this.removeWeaponsOffScreen();
     this.callAirfueling(time);
     this.missilesFire(time);

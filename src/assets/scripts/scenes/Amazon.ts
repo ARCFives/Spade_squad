@@ -34,8 +34,8 @@ export class Amazon extends BaseScene {
     this.playerFuel = 100;
     this.registry.set('violations', 0);
     this.addBackground();
-    this.showHUD();
     this.configSounds();
+    this.showHUD();
     this.createGameObjectsGroups();
     this.addPlayer();
     this.physicsColliders();
