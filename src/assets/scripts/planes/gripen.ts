@@ -11,6 +11,7 @@ export const GRIPEN: IPlanesConfig = {
   speed: 210,
   max_speed: 240,
   fire_rate: 140,
+  maingun_damage: 15,
   heat_per_shoot: 5,
   cooldown_rate: 65,
   fuel_consuption: 7.5,

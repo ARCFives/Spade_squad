@@ -1,7 +1,8 @@
 import { IPlanesConfig } from 'assets/interfaces/IPlanesConfig';
 import { IUpgrades } from 'assets/interfaces/IUpgrades';
 import { AmmoBox } from 'assets/scripts/gameObjects/ammoBox/AmmoBox';
-import { Enemy } from 'assets/scripts/gameObjects/enemy/Enemy';
+import { Contraband } from 'assets/scripts/gameObjects/enemy/air/Contraband';
+import { EnemyBase } from 'assets/scripts/gameObjects/enemy/base/EnemyBase';
 import { FuelGallon } from 'assets/scripts/gameObjects/fuelGallon/FuelGallon';
 import { HUD } from 'assets/scripts/gameObjects/hud/HUD';
 import { KC390 } from 'assets/scripts/gameObjects/kc390/KC390';
@@ -147,17 +148,17 @@ export abstract class BaseScene extends Scene {
       undefined,
       this,
     );
-    this.physics.add.collider(
+    this.physics.add.overlap(
       this.player.shoots,
       this.enemiesGroup,
-      this.enemyHit as Types.Physics.Arcade.ArcadePhysicsCallback,
+      this.enemyShootDamage as Types.Physics.Arcade.ArcadePhysicsCallback,
       undefined,
       this,
     );
     this.physics.add.collider(
       this.player.missiles,
       this.enemiesGroup,
-      this.enemyHit as Types.Physics.Arcade.ArcadePhysicsCallback,
+      this.enemyMissileHit as Types.Physics.Arcade.ArcadePhysicsCallback,
       undefined,
       this,
     );
@@ -180,7 +181,7 @@ export abstract class BaseScene extends Scene {
       maxSize: 2,
     });
     this.enemiesGroup = this.add.group({
-      classType: Enemy,
+      classType: EnemyBase,
       runChildUpdate: true,
       maxSize: 10,
     });
@@ -202,7 +203,7 @@ export abstract class BaseScene extends Scene {
     object.destroy();
   }
 
-  private enemyHit(
+  private enemyMissileHit(
     shoot: Physics.Arcade.Sprite,
     enemy: Physics.Arcade.Sprite,
   ): void {
@@ -212,6 +213,14 @@ export abstract class BaseScene extends Scene {
     this.events.emit('enemyDestroy', 100);
     shoot.destroy();
     enemy.destroy();
+  }
+
+  private enemyShootDamage(enemy: EnemyBase, shoot: Physics.Arcade.Sprite) {
+    if (!shoot || !enemy) return;
+    const damage = shoot.getData('damage') || 10;
+    this.sound.play('hit_tracer');
+    enemy.takeDamage(damage);
+    shoot.destroy();
   }
 
   private pickUpAmmoBox(
@@ -325,7 +334,7 @@ export abstract class BaseScene extends Scene {
   }
 
   private spawnEnemy(): void {
-    const enemy = new Enemy(this, 'enemy');
+    const enemy = new Contraband(this);
     this.enemiesGroup.add(enemy);
   }
 
@@ -347,7 +356,7 @@ export abstract class BaseScene extends Scene {
     );
   }
 
-  private explosionSoundRandom(): string {
+  public explosionSoundRandom(): string {
     const RANDOM_NUMBER: number = Math.RND.integerInRange(1, 2);
     if (RANDOM_NUMBER === 1) {
       return 'explosion_1';

@@ -126,6 +126,7 @@ export class Player extends GameObjects.Container {
   }
 
   private mainGun(time: number) {
+    // maingun in overheated
     if (this.isOverheated) {
       if (
         this.keys.shoot.isDown &&
@@ -137,7 +138,9 @@ export class Player extends GameObjects.Container {
       return;
     }
 
+    // maingun button down
     if (this.keys.shoot.isDown && time > this.lastFired && this.ammoCount > 0) {
+      // verify main is overheated
       if (this.heat + this.configPlane.heat_per_shoot >= 100) {
         this.heat = 100;
         this.isOverheated = true;
@@ -145,34 +148,43 @@ export class Player extends GameObjects.Container {
         this.scene.events.emit('maingunHeat', this.heat);
         return;
       }
+      // player shoot
       const shoot = this.shoots.create(
         this.x + this.configPlane.main_gun_fire_X,
         this.y + this.configPlane.main_gun_fire_y,
         'shoot',
       );
+      shoot.setData('damage', this.reduceDamageHeat()); // damage shoot
       this.muzzleFlash
         .setVisible(true)
         .play('muzzle_flash')
         .once('animationcomplete', () => {
           this.muzzleFlash.setVisible(false);
-        });
-      shoot.setVelocityX(+this.speedGunOverheat());
-      this.lastFired = time + this.configPlane.fire_rate;
-      this.ammoCount--;
-      this.heat += this.configPlane.heat_per_shoot;
-      this.heat = Math.Clamp(this.heat, 0, 100);
+        }); // animation fire maingun
+      shoot.setVelocityX(+this.speedGunOverheat()); // shoot speed
+
+      this.lastFired = time + this.configPlane.fire_rate; // calculate fire rate
+      this.ammoCount--; // reduce ammo
+      this.heat += this.configPlane.heat_per_shoot; // add heat in maingun
+      this.heat = Math.Clamp(this.heat, 0, 100); // set min and máx value of heat
       this.scene.sound.play(this.configPlane.maingun_sound);
-      this.scene.events.emit('maingunHeat', this.heat);
-      this.scene.events.emit('playerMainGun', this.ammoCount);
+      this.scene.events.emit('maingunHeat', this.heat); // event heat
+      this.scene.events.emit('playerMainGun', this.ammoCount); // event ammo
     }
 
+    // maingun zero ammo
     if (this.keys.shoot.isDown && time > this.lastFired && this.ammoCount === 0)
       this.scene.sound.play('wp_tick');
   }
 
   private speedGunOverheat(): number {
-    if (this.heat >= 70) return 220;
-    return 300;
+    if (this.heat >= 70) return 250;
+    return 320;
+  }
+
+  private reduceDamageHeat(): number {
+    if (this.heat >= 70) return this.configPlane.maingun_damage / 2;
+    return this.configPlane.maingun_damage;
   }
 
   private missilesFire(time: number) {

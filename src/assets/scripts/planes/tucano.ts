@@ -11,6 +11,7 @@ export const TUCANO: IPlanesConfig = {
   speed: 150,
   max_speed: 180,
   fire_rate: 260,
+  maingun_damage: 5,
   heat_per_shoot: 10,
   cooldown_rate: 45,
   fuel_consuption: 5,

@@ -59,7 +59,7 @@ export class Preload extends Phaser.Scene {
       frameWidth: 148,
       frameHeight: 148,
     });
-    this.load.spritesheet('enemy', 'cessna.png', {
+    this.load.spritesheet('contraband', 'cessna.png', {
       frameWidth: 80,
       frameHeight: 28,
     });
@@ -127,6 +127,7 @@ export class Preload extends Phaser.Scene {
     this.load.audio('event_pickup', 'event_pickup.wav');
     this.load.audio('explosion_1', 'explosion_1.wav');
     this.load.audio('explosion_2', 'explosion_2.wav');
+    this.load.audio('hit_tracer', 'hit_1.wav');
     // Interface Sounds
     this.load.audio('int_select', 'int_select.wav');
     this.load.audio('int_back', 'int_back.wav');
@@ -160,8 +161,8 @@ export class Preload extends Phaser.Scene {
 
   enemyAnimation() {
     this.anims.create({
-      key: 'enemyFly',
-      frames: this.anims.generateFrameNumbers('enemy', {
+      key: 'contraband_move',
+      frames: this.anims.generateFrameNumbers('contraband', {
         frames: [0, 1, 2, 3],
       }),
       frameRate: 10,
